@@ -8,6 +8,9 @@ Reveal Theme  : solarized
 Beamer Theme  : singapore
 Package       : pstricks
 Package       : pst-plot
+Bib           : ../shared/references.bib
+Csl Style     : ../shared/evolution.csl
+Cite Style    : natural
 @html .math-inline, .math-display: color=#586e75
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_SVG-full" type="text/javascript"></script>
@@ -41,9 +44,12 @@ Package       : pst-plot
   \hat{\theta} =\underset{\theta \in \Omega}{\operatorname{arg max}} \left [ L_y(\theta) \right ]
   ~~
   Any further inference uses this ML estimator
-  ~~ Math
-  \mu = f(\hat{\theta})
-  ~~
+
+  ~ Center
+  ~~ Math 
+  \mu = f(\hat{\theta}) 
+  ~~ 
+  ~
 
 ## Log Likelihood surface
 
@@ -65,15 +71,30 @@ We can think of Bayesian Statistics as an extension of ML
 
 - ML: What is the parameter value with the highest probability of having generated the data:
 
-  ~~ Math
+  ~ Center
+  ~~ Math { padding:.3em; \
+    background-color:floralwhite; \
+    background-clip: padding-box; \
+    border: 0.3ex solid black; \
+    border-radius: 10ex; \
+    width: 9em; \
+    vertical-align: middle; }
   \underset{\theta \in \Omega}{\operatorname{arg max}} \left [ P(y|\theta) \right ]
   ~~
-
+  ~
 
 - Bayes: What the distribution of parameter values given the data:
-  ~~ Math
+  ~ Center
+  ~~ Math { padding:.3em; \
+    background-color:floralwhite; \
+    background-clip: padding-box; \
+    border: 0.3ex solid black; \
+    border-radius: 10ex; \
+    width: 10em; \
+    vertical-align: middle; }
   P(\theta|y) \propto P(\theta)P(y|\theta)
   ~~
+  ~
 
 ## Prior $\times$ Likelihood $\propto$ Posterior
 
@@ -91,13 +112,50 @@ We can think of Bayesian Statistics as an extension of ML
 
 ## confidence intervals
 
-- much easier to interpret
-- can be used in testing
-- trivial to extend to all derived quantities
+~~ Center
 
-## priors and scale
+![intervals]
 
-image representing prior simulations and scale
+~~
+
+[intervals]: ../figures/confidence_intervals.png "Posterior confidence intervals" { height: 700px }
+
+## priors can be used to encode scale information
+
+~~ Center
+
+![weight_height]
+
+~~
+
+Adapted from [@rethinking].
+
+[weight_height]: ../figures/height_weight_regression.png "height weight from data(Howell1)" { height: 700px }
+
+
+## Wide prior 
+
+~~ Center
+
+![wide]
+
+~~
+
+This is sometimes refered to as a non-informative prior
+
+[wide]: ../figures/wide_prior.png "height weight from data(Howell1)" { height: 700px }
+
+## sensible priors
+
+~~ Center
+
+![sensible]
+
+~~
+
+This prior is informative, but in a good way!
+
+[sensible]: ../figures/sensible_prior.png "height weight from data(Howell1)" { height: 700px }
 
 ## nuisance variables
 

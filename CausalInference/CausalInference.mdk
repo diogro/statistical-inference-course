@@ -14,3 +14,28 @@ Package       : pst-plot
 
 [TITLE]
 
+# what are models for?
+
+## prediction vs inference
+
+- small world - large world applications
+
+## causal thinking
+
+- linear models can be used to parse causal effects from confounders
+
+## graph model representation
+
+## elemental triads
+
+## simulating confounds
+
+## representing causal models
+ 
+## using dags to build models
+
+## good controls
+
+## bad controls
+
+

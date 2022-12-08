@@ -1,0 +1,188 @@
+[INCLUDE=present.mdk]
+Title         : Probabilistic Modeling
+Sub Title     : Introduction to Bayesian Statistics
+Author        : Diogo Melo
+Affiliation   : Lewis-Sigler Institute of Intergrative Genomics
+Email         : damelo@princeton.edu
+Reveal Theme  : solarized
+Beamer Theme  : singapore
+Package       : pstricks
+Package       : pst-plot
+@html .math-inline, .math-display: color=#586e75
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_SVG-full" type="text/javascript"></script>
+
+[TITLE]
+
+# Intro 
+
+## Maximum Likelihood estimation
+
+  - Up to this point we have been using the Maximum Likelihood principle
+  - ML has many advantages:
+
+    - General
+    - Automatic
+    - Good theoretical justification
+    - Good performance
+
+## The Maximum Likelihood way
+
+   Given some data...
+  ~~ Math
+  y = \{ y_1, \cdots, y_n \}
+  ~~
+  Define an observational model: 
+  ~~ Math
+  P(y|\theta) = L_y(\theta)
+  ~~
+  Maximize the likelihood over the parameter space: 
+  ~~ Math
+  \hat{\theta} =\underset{\theta \in \Omega}{\operatorname{arg max}} \left [ L_y(\theta) \right ]
+  ~~
+  Any further inference uses this ML estimator
+  ~~ Math
+  \mu = f(\hat{\theta})
+  ~~
+
+## Log Likelihood surface
+
+
+~~ Center
+
+![surface]
+
+~ Math
+y \sim Normal(\mu + \beta x, \sigma)
+~
+~~
+
+[surface]: ../figures/logliksurface.png "A log likelihood surface" { height: 700px }
+
+## What is Bayesian Statistics?
+
+We can think of Bayesian Statistics as an extension of ML
+
+- ML: What is the parameter value with the highest probability of having generated the data:
+
+  ~~ Math
+  \underset{\theta \in \Omega}{\operatorname{arg max}} \left [ P(y|\theta) \right ]
+  ~~
+
+
+- Bayes: What the distribution of parameter values given the data:
+  ~~ Math
+  P(\theta|y) \propto P(\theta)P(y|\theta)
+  ~~
+
+## Prior $\times$ Likelihood $\propto$ Posterior
+
+~ Center
+![](../figures/prior_likelihood.png)
+~
+
+## why using the posterior is useful
+
+- $P(\theta|y)$ represents our knowledge of parameters using probability 
+  - this representation fully encapsulates our beliefs
+- $P(\theta)$, the prior, can encode useful information
+    - parameter scale, shared structure, permited values...
+- Expands the range of models we can fit
+
+## confidence intervals
+
+- much easier to interpret
+- can be used in testing
+- trivial to extend to all derived quantities
+
+## priors and scale
+
+image representing prior simulations and scale
+
+## nuisance variables
+
+we can add aditional variables that help to structure the model but are not present in the posterior
+
+find a good nuisance variable example
+
+# Using the posterior
+
+## Posterior estimators 
+
+Bayesian equivalent to MLE is the **M**aximum **A** **P**osteriori (MAP):
+
+~~ Math
+\hat \theta^{MAP}  = \underset{\theta \in \Omega}{\operatorname{arg max}} \left [ P(\theta|y) \right ]
+~~
+
+The posterior mean is more common:
+
+~~ Math
+E_y[\theta]  = \sum_{\theta \in \Omega} \theta P(\theta|y) 
+~~
+
+(Posterior median is also used occasionally.) 
+
+## Posterior approximations
+
+- For a small number of models we can write the posterior distribution directly (really small, don't bother).
+
+- For most models, we use posterior samples to approximate the posterior.
+
+~~ Math
+\{\theta_1, \cdots, \theta_N\} \sim P(\theta|y)
+~~ 
+
+## Posterior approximations
+
+~ Center
+![Posterior samples and posterior density](../figures/posterior_samples.png)
+~
+
+## Posterior approximations
+
+This sample can be used to calculate any quantity of interest
+~~ Math
+    \{\theta_1, \cdots, \theta_N\} \sim P(\theta|y)
+~~ 
+For example, the posterior mean is just:
+~~ Math
+     \frac{\theta_1 + \theta_2 + \cdots + \theta_N}{N} \approx \sum_{\theta \in \Omega} \theta P(\theta|y) 
+~~ 
+
+## Other quantities
+
+- any other functions of the parameters can be estimated from the samples
+- The most common use is to calculate contrasts
+
+## Constrasts
+
+Figure of contrasts
+
+# Building a model
+
+## My first bayesian regression model
+
+Given the matched pairs:
+~~ Math
+(x, y) = \{ (x_1, y_1), \cdots, (x_n, y_n) \}
+~~
+Define a likelihood:
+~~ Math
+y_i ~ Normal(\mu_i, \sigma)
+~~
+~~ Math
+\mu_i = a + bx_i 
+~~
+And a set of priors on the parameters:
+~~Math
+a ~ P(a)
+~~
+~~Math
+b ~ P(b)
+~~
+~~Math
+\sigma ~ P(\sigma)
+~~
+
+## How do we choose the priors?

@@ -1,0 +1,33 @@
+[INCLUDE=present.mdk]
+Title         : bayesian model fitting
+Sub Title     : MCMC sampling
+Author        : Diogo Melo
+Affiliation   : Lewis-Sigler Institute of Intergrative Genomics
+Email         : damelo@princeton.edu
+Reveal Theme  : solarized
+Beamer Theme  : singapore
+Package       : pstricks
+Package       : pst-plot
+@html .math-inline, .math-display: color=#586e75
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_SVG-full" type="text/javascript"></script>
+
+[TITLE]
+
+# why do we need computational methods?
+
+## curse of dimentionality 
+
+## typical set 
+
+## finding high probability regions
+
+## mcmc method
+
+## types of samplers
+
+## example fitting 
+
+## tricks and simulations
+
+## interacting with the posterior samples

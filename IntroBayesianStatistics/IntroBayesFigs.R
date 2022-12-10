@@ -1,3 +1,4 @@
+pak::pkg_install(c("rmcelreath/rethinking", "rstanarm", "bayesplot", "ggplot2", "cowplot", "viridis", "patchwork", "latex2exp", "extrafont", "tidyverse", "stats4"))
 library(rethinking)
 library(rstanarm)
 library(bayesplot)
@@ -10,8 +11,8 @@ library(extrafont)
 library(tidyverse)
 library(stats4)
 
-# font_import()
-loadfonts(device = "all", quiet = TRUE) 
+font_import()
+loadfonts(device = "win", quiet = TRUE) 
 
 ggplot(data.frame(x = rnorm(1000)), aes(x)) +
   geom_histogram(aes(y = ..density..), bins=2^6, colour="white", fill="DarkGray") +
@@ -47,7 +48,7 @@ LL <- function(mu, beta) {
      -sum(R)
   }
 estimate = mle(LL, start = list(mu = 1, beta = 2))
-opt_value_rev = data.frame(x = 1, y = 2)
+opt_value_rev = data.frame(x = estimate@coef[1], y = estimate@coef[2])
 d = expand_grid(x = seq(0, 2, 0.05), y = seq(1, 4, 0.05))
 d$LL = 0
 for(i in 1:nrow(d)) d$LL[i] = LL(d$x[i], d$y[i])
@@ -55,7 +56,8 @@ png(here::here("figures", "logliksurface.png"), height = fig.height, width = fig
 ggplot(data = d) +
   geom_tile(aes(x = x, y = y, fill = LL)) +
   stat_contour(aes(x = x, y = y, z = LL), color = 2) +
-  geom_point(data = opt_value_rev, aes(x = x, y = y), color = "orange", size = 4, shape = 4, stroke = 2) +
+  geom_point(data = opt_value_rev, aes(x = x, y = y), 
+  color = "orange", size = 4, shape = 4, stroke = 2) +
   scale_fill_viridis_c(option = "A") + 
   labs(x = TeX('$\\mu$'), y =  TeX('$\\beta$')) +
   theme_minimal() +
@@ -142,5 +144,5 @@ ggplot() +
           axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
         legend.position = "none") + ggtitle(TeX('$log(\\beta) \\sim Normal(0, 1)$')) + 
-        annotate("text", x = 32, y = 273, label = "Tallest person ever (272cm)", size = axis.font.size*0.4, vjust=0, hjust = 0, family = figure.font)
+        annotate("text", x = 32, y = 274, label = "Tallest person ever (272cm)", size = axis.font.size*0.4, vjust=0, hjust = 0, family = figure.font)
 dev.off()

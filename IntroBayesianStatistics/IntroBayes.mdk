@@ -159,7 +159,7 @@ This prior is informative, but in a good way!
 
 ## nuisance variables
 
-we can add aditional variables that help to structure the model but are not present in the posterior
+we can add additional variables that help to structure the model but are not present in the posterior
 
 find a good nuisance variable example
 
@@ -227,20 +227,27 @@ Given the matched pairs:
 ~~
 Define a likelihood:
 ~~ Math
-y_i ~ Normal(\mu_i, \sigma)
+y_i \sim Normal(\mu_i, \sigma)
 ~~
 ~~ Math
-\mu_i = a + bx_i 
+\mu_i = \alpha + \beta x_i 
 ~~
 And a set of priors on the parameters:
 ~~Math
-a ~ P(a)
+\alpha \sim P(a)
 ~~
 ~~Math
-b ~ P(b)
+\beta \sim P(b)
 ~~
 ~~Math
-\sigma ~ P(\sigma)
+\sigma \sim P(\sigma)
 ~~
 
 ## How do we choose the priors?
+
+- Using domain expertise 
+  - Knowledge of scale (height $\sim$ weight example)
+  - Experimental design (more in the hierarchical models class)
+  - Using simulations to understand the implications of priors
+- Hard conditions
+  - restricted domains (e.g. variance must be positive)

@@ -102,7 +102,9 @@ We can think of Bayesian Statistics as an extension of ML
 ![](../figures/prior_likelihood.png)
 ~
 
-## why using the posterior is useful
+## why use the posterior?
+
+Isn't the MAP the best estimator?
 
 - $P(\theta|y)$ represents our knowledge of parameters using probability 
   - this representation fully encapsulates our beliefs

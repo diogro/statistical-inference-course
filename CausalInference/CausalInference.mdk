@@ -8,6 +8,7 @@ Reveal Theme  : solarized
 Beamer Theme  : singapore
 Package       : pstricks
 Package       : pst-plot
+Bibliography  : ../shared/references.bib
 @html .math-inline, .math-display: color=#586e75
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_SVG-full" type="text/javascript"></script>
@@ -26,12 +27,224 @@ Package       : pst-plot
 
 ## graph model representation
 
+We can use graphs to represent our putative causal model. An arrow between variables represents a potential causal effect.
+
+~ Center
+![xy]
+~
+
+[xy]: ../figures/DAGS/x-y.svg "x-y" { width: 300px }
+
+
 ## elemental triads
+
+~ Center
+The pipe
+
+![pipe]{ height: 30px } 
+
+The fork 
+
+![fork]{ height: 30px } 
+
+The colider 
+
+![colider]{ height: 30px } 
+~
+
+[pipe]: ../figures/DAGS/pipe.svg "Pipe" { width: 300px }
+[fork]: ../figures/DAGS/fork.svg "Fork" { width: 300px }
+[colider]: ../figures/DAGS/colider.svg "Colider" { width: 300px }
+
+## representing causal models
+
+
 
 ## simulating confounds
 
-## representing causal models
- 
+How does a confound affect our estimate of the effect of x on y?
+
+~ Center
+![xy_all]
+~
+
+[xy_all]: ../figures/DAGS/x-y_all.svg "x-y" { width: 500px }
+
+## fork
+
+~ Center
+![xy_fork]
+~
+
+[xy_fork]: ../figures/DAGS/x-y_fork.svg "x-y" { width: 200px }
+
+Generative model implied by this DAG:
+
+~ Math
+\begin{aligned} 
+y &\sim Normal(\mu, \sigma) \\
+\mu &= a + bx + cz 
+\end{aligned}
+~
+
+## fork
+
+~ Center
+![xy_fork]
+~
+
+[xy_fork]: ../figures/DAGS/x-y_fork.svg "x-y" { width: 200px }
+
+Statistical model without the confounder:
+~ Math
+\begin{aligned} 
+y &\sim Normal(\mu, \sigma) \\
+\mu &= a + bx \\ 
+a &\sim Normal(0, 0.3) \\
+b &\sim Normal(0, 0.3) \\
+\sigma  &\sim Exponential(1)
+\end{aligned}
+~
+
+## fork
+
+~ Center
+![xy_fork]
+~
+
+``` python
+N = 100
+z = rnorm(N)            # z ~ normal(0, 1)
+x = rnorm(N, 1 + z)     # x ~ normal(1 + z, 1)
+y = rnorm(N, 1 + x + z) # y ~ normal(1 + x + z, 1)
+
+m1 = ulam(alist(
+    y ~ normal(a + b*x, sigma),
+    a ~ normal(0, 0.3),
+    b ~ normal(0, 0.3),
+    sigma ~ exponential(1)
+), data = list(y = y, x = x))
+```
+
+## Fork
+
+~ Center
+![xy_fork]
+~
+
+``` python
+> precis(m1)
+      mean   sd 5.5% 94.5% n_eff  Rhat
+a     0.43 0.12 0.25  0.63   300     1
+b     1.39 0.08 1.27  1.51   325     1  # Estimate of the effect of x on y
+sigma 1.10 0.08 0.99  1.23   426     1
+```
+
+## Fork
+
+~ Center
+![](../figures/x-y_fork_non_corrected.png)
+~
+
+## Including the confounder
+
+``` python
+m2 = ulam(alist(
+    y ~ normal(a + b*x + c*z, sigma),
+    a ~ normal(0, 0.3),
+    b ~ normal(0, 0.3),
+    c ~ normal(0, 0.3),   # New parameter for confounder
+    sigma ~ exponential(1)
+), data = list(y = y, x = x, z = z))
+> precis(m2)
+      mean   sd 5.5% 94.5% n_eff  Rhat
+a     0.78 0.12 0.59  0.97   233     1
+b     1.08 0.09 0.95  1.21   225     1
+c     0.69 0.11 0.51  0.85   218     1
+sigma 0.93 0.06 0.83  1.04   370     1
+```
+
+##  Including the confounder
+
+~ Center
+![Corrected confounder](../figures/x-y_fork_corrected.png)
+~
+
+## pipe
+
+~ Center
+![xy_pipe2]
+~
+
+[xy_pipe]: ../figures/DAGS/x-y_pipe.svg "x-y" { width: 200px }
+[xy_pipe2]: ../figures/DAGS/x-y_pipe2.svg "x-y" { width: 200px }
+
+
+Generative model implied by this DAG:
+
+~ Math
+\begin{aligned} 
+y &\sim Normal(a_y + b_yz, \sigma_y) \\
+z &\sim Normal(a_z + b_zx, \sigma_z) \\
+x &\sim Normal(a_x, \sigma_x) \\
+\end{aligned}
+~
+
+## pipe
+
+~ Center
+![xy_pipe2]
+~
+
+``` python
+set.seed(2)
+N = 100
+x = rnorm(N)        # x ~ normal(0, 1)
+z = rnorm(N, 1 + x) # z ~ normal(1 + x, 1)
+y = rnorm(N, 1 + z) # y ~ normal(1 + z, 1)
+
+m1 = ulam(alist(
+    y ~ normal(a + b*x, sigma),
+    a ~ normal(0, 0.3),
+    b ~ normal(0, 0.3),
+    sigma ~ exponential(1)
+), data = list(y = y, x = x), iter = 1000, chains = 4, cores = 4)
+```
+
+
+## pipe
+
+``` python
+m1 = ulam(alist(
+    y ~ normal(a + b*x, sigma),
+    a ~ normal(0, 0.3),
+    b ~ normal(0, 0.3),
+    sigma ~ exponential(1)
+), data = list(y = y, x = x), iter = 1000, chains = 4, cores = 4)
+```
+
+~ Center
+![Non corrected confounder](../figures/x-y_pipe_non_corrected.png)
+~
+
+
+
+## Including the mediator
+
+``` python
+m2 = ulam(alist(
+    y ~ normal(a + b*x + c*z, sigma),
+    a ~ normal(0, 0.3),
+    b ~ normal(0, 0.3), 
+    c ~ normal(0, 0.3),     # Including the mediating variable
+    sigma ~ exponential(1)
+), data = list(y = y, x = x, z = z), iter = 1000, chains = 4, cores = 4)
+```
+
+~ Center
+![Corrected confounder](../figures/x-y_pipe_corrected.png)
+~
+
 ## using dags to build models
 
 ## good controls

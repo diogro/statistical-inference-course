@@ -70,7 +70,9 @@ How does a confound affect our estimate of the effect of x on y?
 
 [xy_all]: ../figures/DAGS/x-y_all.svg "x-y" { width: 500px }
 
-## fork
+# Fork
+
+## Direct effect of x on y, plus confounder z
 
 ~ Center
 ![xy_fork]
@@ -82,12 +84,13 @@ Generative model implied by this DAG:
 
 ~ Math
 \begin{aligned} 
-y &\sim Normal(\mu, \sigma) \\
-\mu &= a + bx + cz 
+y &\sim Normal(\alpha_y + \beta_{yx}x + \beta_{yz}z, \sigma_y) \\
+x &\sim Normal(\alpha_x + \beta_{xz}z, \sigma_x) \\
+z &\sim Normal(\alpha_z, \sigma_z) \\
 \end{aligned}
 ~
 
-## fork
+## Model without the confounder
 
 ~ Center
 ![xy_fork]
@@ -106,7 +109,7 @@ b &\sim Normal(0, 0.3) \\
 \end{aligned}
 ~
 
-## fork
+## ulam model without the confounder
 
 ~ Center
 ![xy_fork]
@@ -119,14 +122,14 @@ x = rnorm(N, 1 + z)     # x ~ normal(1 + z, 1)
 y = rnorm(N, 1 + x + z) # y ~ normal(1 + x + z, 1)
 
 m1 = ulam(alist(
-    y ~ normal(a + b*x, sigma),
+    y ~ normal(a + bx*x, sigma),
     a ~ normal(0, 0.3),
-    b ~ normal(0, 0.3),
+    bx ~ normal(0, 0.3),
     sigma ~ exponential(1)
 ), data = list(y = y, x = x))
 ```
 
-## Fork
+## model estimates without the confounder
 
 ~ Center
 ![xy_fork]
@@ -134,13 +137,14 @@ m1 = ulam(alist(
 
 ``` python
 > precis(m1)
-      mean   sd 5.5% 94.5% n_eff  Rhat
-a     0.43 0.12 0.25  0.63   300     1
-b     1.39 0.08 1.27  1.51   325     1  # Estimate of the effect of x on y
-sigma 1.10 0.08 0.99  1.23   426     1
+      mean   sd 5.5% 94.5% n_eff Rhat4
+a     0.54 0.14 0.32  0.77  1274     1
+bx    1.47 0.08 1.34  1.60  1432     1  # Estimate of the effect of x on y
+sigma 1.33 0.10 1.19  1.49  1418     1
 ```
 
-## Fork
+## $P(\beta_{yx}|x, y)$ without the confounder
+<!-- $  -->
 
 ~ Center
 ![](../figures/x-y_fork_non_corrected.png)
@@ -150,27 +154,54 @@ sigma 1.10 0.08 0.99  1.23   426     1
 
 ``` python
 m2 = ulam(alist(
-    y ~ normal(a + b*x + c*z, sigma),
+    y ~ normal(a + bx*x + bz*z, sigma),
     a ~ normal(0, 0.3),
-    b ~ normal(0, 0.3),
-    c ~ normal(0, 0.3),   # New parameter for confounder
+    bx ~ normal(0, 0.3),
+    bz ~ normal(0, 0.3),   # New parameter for confounder
     sigma ~ exponential(1)
 ), data = list(y = y, x = x, z = z))
 > precis(m2)
-      mean   sd 5.5% 94.5% n_eff  Rhat
-a     0.78 0.12 0.59  0.97   233     1
-b     1.08 0.09 0.95  1.21   225     1
-c     0.69 0.11 0.51  0.85   218     1
-sigma 0.93 0.06 0.83  1.04   370     1
+       mean   sd 5.5% 94.5% n_eff Rhat4
+a      0.95 0.14 0.72  1.17   942     1
+bx     1.06 0.10 0.91  1.22   837     1
+bz     0.82 0.12 0.62  1.02   889     1
+sigma  1.09 0.08 0.97  1.22  1200     1
 ```
 
-##  Including the confounder
+##  $P(\beta_{yx}|x, y)$ with the confounder
+<!-- $  -->
 
 ~ Center
 ![Corrected confounder](../figures/x-y_fork_corrected.png)
 ~
 
-## pipe
+## Examples of forks or confounders 
+
+This is the quintessential "control" variable. Most variables are included in the model under the assumption that they are confounders and need to be controled for to give correct estimates.
+
+~ Center
+![xy_fork]
+~
+
+## Smoking and cancer
+
+Famously, R. A. Fisher was not convinced that smoking caused cancer, and proposed that an unobserved propensity variable caused both cancer and smoking
+
+~ Center
+![](../figures/smoking_cancer.png){ width: 400px }
+~
+
+## Species distributions
+
+Maybe want to evaluate the effect of some predator on the distribution of a prey. But the spacial distribution of both the predator and the prey are affected by some abiotic factor:
+
+~ Center
+![](../figures\species_predator.png){ width: 400px }
+~
+
+# Pipe
+
+## All the effect of x on y is mediated by z
 
 ~ Center
 ![xy_pipe2]
@@ -184,41 +215,42 @@ Generative model implied by this DAG:
 
 ~ Math
 \begin{aligned} 
-y &\sim Normal(a_y + b_yz, \sigma_y) \\
-z &\sim Normal(a_z + b_zx, \sigma_z) \\
-x &\sim Normal(a_x, \sigma_x) \\
+y &\sim Normal(\alpha_y + \beta_{yz}z, \sigma_y) \\
+z &\sim Normal(\alpha_z + \beta_{zx}x, \sigma_z) \\
+x &\sim Normal(\alpha_x, \sigma_x) 
 \end{aligned}
 ~
 
-## pipe
+## Model without the mediator
 
 ~ Center
 ![xy_pipe2]
 ~
 
 ``` python
-set.seed(2)
+set.seed(1)
 N = 100
 x = rnorm(N)        # x ~ normal(0, 1)
 z = rnorm(N, 1 + x) # z ~ normal(1 + x, 1)
 y = rnorm(N, 1 + z) # y ~ normal(1 + z, 1)
 
 m1 = ulam(alist(
-    y ~ normal(a + b*x, sigma),
+    y ~ normal(a + bx*x, sigma),
     a ~ normal(0, 0.3),
-    b ~ normal(0, 0.3),
+    bx ~ normal(0, 0.3),
     sigma ~ exponential(1)
 ), data = list(y = y, x = x), iter = 1000, chains = 4, cores = 4)
 ```
 
 
-## pipe
+## $P(\beta_{yx}|x, y)$ without the mediator
+<!-- $  -->
 
 ``` python
 m1 = ulam(alist(
-    y ~ normal(a + b*x, sigma),
+    y ~ normal(a + bx*x, sigma),
     a ~ normal(0, 0.3),
-    b ~ normal(0, 0.3),
+    bx ~ normal(0, 0.3),
     sigma ~ exponential(1)
 ), data = list(y = y, x = x), iter = 1000, chains = 4, cores = 4)
 ```
@@ -227,16 +259,14 @@ m1 = ulam(alist(
 ![Non corrected confounder](../figures/x-y_pipe_non_corrected.png)
 ~
 
-
-
 ## Including the mediator
 
 ``` python
 m2 = ulam(alist(
-    y ~ normal(a + b*x + c*z, sigma),
+    y ~ normal(a + bx*x + bz*z, sigma),
     a ~ normal(0, 0.3),
-    b ~ normal(0, 0.3), 
-    c ~ normal(0, 0.3),     # Including the mediating variable
+    bx ~ normal(0, 0.3),
+    bz ~ normal(0, 0.3), # Mediator
     sigma ~ exponential(1)
 ), data = list(y = y, x = x, z = z), iter = 1000, chains = 4, cores = 4)
 ```
@@ -245,7 +275,135 @@ m2 = ulam(alist(
 ![Corrected confounder](../figures/x-y_pipe_corrected.png)
 ~
 
+## Pipe vs Fork
+
+~ Center
+![Pipe vs Fork](../figures/pipe_vs_fork.svg)
+~
+
+## Examples of pipes or mediators 
+
+Including a mediator in our models can have catastrophic effects. A common mistake is to include post-treatment variables in the model.
+
+~ Center
+![xy_pipe]
+~
+
+## Post-treatment variables
+
+If we are evaluating the effectiveness of a fungal treatment, most of the effect of the treatment could be mediated by the presence of fungus. So, using presence of fungus in our model would mask the effect of the treatment.
+
+~ Center
+![](../figures\fungal_treatment.png)
+~
+
+
+## Conditioning on Posttreatment Variables
+
+~ Center
+![](../figures\post_treatment_paper.png
+)
+~
+
+- Montgomery, J.M., Nyhan, B. and Torres, M. (2018)
+- American Journal of Political Science, 62: 760-775. 
+- https://doi.org/10.1111/ajps.12357
+
+# Colider
+
+## No effect of x on y, but both affect z
+
+~ Center
+![xy_colider2]
+~
+
+[xy_colider2]: ../figures/DAGS/x-y_colider2.svg "x-y" { width: 200px }
+
+
+Generative model implied by this DAG:
+
+~ Math
+\begin{aligned} 
+y &\sim Normal(\alpha_y, \sigma_y) \\
+x &\sim Normal(\alpha_x, \sigma_x) \\
+z &\sim Normal(\alpha_z + \beta_{zx}x + \beta_{zy}y, \sigma_z) \\
+\end{aligned}
+~
+
+## Model without the colider
+
+~ Center
+![xy_colider2]
+~
+
+``` python
+set.seed(1)
+N = 100
+x = rnorm(N)            # x ~ normal(0, 1)
+y = rnorm(N)            # y ~ normal(0, 1)
+z = rnorm(N, 1 + x + y) # z ~ normal(1 + x + y, 1) -> colider
+
+m1 = ulam(alist(
+    y ~ normal(a + bx*x, sigma),
+    a ~ normal(0, 0.3),
+    bx ~ normal(0, 0.3),
+    sigma ~ exponential(1)
+), data = list(y = y, x = x), iter = 1000, chains = 4, cores = 4)
+```
+
+## $P(\beta_{yx}|x, y)$ without the colider
+<!-- $  -->
+
+``` python
+m1 = ulam(alist(
+    y ~ normal(a + bx*x, sigma),
+    a ~ normal(0, 0.3),
+    bx ~ normal(0, 0.3),
+    sigma ~ exponential(1)
+), data = list(y = y, x = x), iter = 1000, chains = 4, cores = 4)
+```
+
+~ Center
+![Non corrected colider](../figures/x-y_colider_non_corrected.png)
+~
+
+## $P(\beta_{yx}|x, y)$ with the colider
+<!-- $  -->
+
+``` python
+m2 = ulam(alist(
+    y ~ normal(a + bx*x + bz*z, sigma),
+    a ~ normal(0, 0.3),
+    bx ~ normal(0, 0.3),
+    bz ~ normal(0, 0.3), # Colider
+    sigma ~ exponential(1)
+), data = list(y = y, x = x, z = z), iter = 1000, chains = 4, cores = 4)
+```
+
+~ Center
+![corrected colider](../figures/x-y_colider_corrected.png)
+~
+
+## Coliders can cause our samples to be biased 
+
+~ Begin Columns
+
+~ Column 
+![](../figures/restaurant_colider.svg){width: 310px}
+~
+~ Column
+![](../figures/research_colider.svg){width: 400px}
+~
+
+~ End Columns
+
 ## using dags to build models
+
+If we represent our putative causal relations using DAGs, we have a set of rules that tells us what variables we need to include in the model in order to calculate a particular effect.
+
+- Automated tool: [dagitty.net](http://www.dagitty.net/dags.html)
+
+## Back door criterion
 
 ## good controls
 

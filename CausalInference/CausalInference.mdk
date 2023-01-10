@@ -35,7 +35,6 @@ We can use graphs to represent our putative causal model. An arrow between varia
 
 [xy]: ../figures/DAGS/x-y.svg "x-y" { width: 300px }
 
-
 ## elemental triads
 
 ~ Center

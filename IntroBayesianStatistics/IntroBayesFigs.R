@@ -142,9 +142,13 @@ ggplot() +
   geom_hline(yintercept = 272) +
   theme_minimal() + labs(x = "weight (kg)", y = "height (cm)") + 
         geom_vline(xintercept = 0, linewidth = 1) + 
-        theme(title = element_text(size = axis.font.size, color = "#586E75"),
-          axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
+        theme(
+          title = element_text(size = axis.font.size, color = "#586E75"),
+          axis.title = element_text(size = axis.font.size*0.8, 
+          family = figure.font, color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
-        legend.position = "none") + ggtitle(TeX('$log(\\beta) \\sim Normal(0, 1)$')) + 
-        annotate("text", x = 32, y = 274, label = "Tallest person ever (272cm)", size = axis.font.size*0.4, vjust=0, hjust = 0, family = figure.font)
+        legend.position = "none") + 
+        ggtitle(TeX('$log(\\beta) \\sim Normal(0, 1)$')) + 
+        annotate("text", x = 32, y = 274, label = "Tallest person ever (272cm)", 
+        size = axis.font.size*0.2, vjust=0, hjust = 0, family = figure.font)
 dev.off()

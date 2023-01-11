@@ -113,6 +113,14 @@ We can think of Bayesian Statistics as an extension of ML
   ~~
   ~
 
+## Probability Theory: The Logic of Science (2003)
+
+~ Center
+![](../figures/jaynes_book.jpeg){height: 500px}
+~ 
+By Edwin Thompson Jaynes (1922 – 1998) 
+
+
 ## Prior $\times$ Likelihood $\propto$ Posterior
 
 ~ Center
@@ -178,13 +186,13 @@ E_y[\theta]  = \sum_{\theta \in \Omega} \theta P(\theta|y)
 \{\theta_1, \cdots, \theta_N\} \sim P(\theta|y)
 ~~ 
 
-## Posterior approximations
+## Posterior sample histogram
 
 ~ Center
 ![Posterior samples and posterior density](../figures/posterior_samples.png){height: 500px}
 ~
 
-## Posterior approximations
+## Posterior derived QUANTITIES 
 
 This sample can be used to calculate any quantity of interest
 ~~ Math

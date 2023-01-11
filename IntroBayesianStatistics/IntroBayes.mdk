@@ -25,7 +25,7 @@ Cite Style    : natural
   - ML has many advantages:
 
     - General
-    - Automatic
+    - (mostly) Automatic
     - Good theoretical justification
     - Good performance
 
@@ -63,7 +63,24 @@ y \sim Normal(\mu + \beta x, \sigma)
 ~
 ~~
 
-[surface]: ../figures/logliksurface.png "A log likelihood surface" { height: 700px }
+[surface]: ../figures/logliksurface.png "A log likelihood surface" { height: 500px }
+
+# Bayes
+
+# rev thomas bayes (1701 – 1761)
+
+~~ Center
+![](../figures/thomas_bayes.gif){height: 500px}
+~~
+
+# Product rule (or Bayes Theorem)
+
+~ Center
+~~ Math
+P(AB) = P(A|B)P(B) = P(B|A)P(A)
+~~
+
+~
 
 ## What is Bayesian Statistics?
 
@@ -99,18 +116,19 @@ We can think of Bayesian Statistics as an extension of ML
 ## Prior $\times$ Likelihood $\propto$ Posterior
 
 ~ Center
-![](../figures/prior_likelihood.png)
+![](../figures/prior_likelihood.png){height: 600px}
 ~
 
 ## why use the posterior?
 
-Isn't the MAP the best estimator?
+Isn't the MAP the best estimator? (depends on the criteria...)
 
 - $P(\theta|y)$ represents our knowledge of parameters using probability 
   - this representation fully encapsulates our beliefs
 - $P(\theta)$, the prior, can encode useful information
     - parameter scale, shared structure, permited values...
 - Expands the range of models we can fit
+- Allows us to use probability in more contexts
 
 ## confidence intervals
 
@@ -120,50 +138,17 @@ Isn't the MAP the best estimator?
 
 ~~
 
-[intervals]: ../figures/confidence_intervals.png "Posterior confidence intervals" { height: 700px }
+[intervals]: ../figures/confidence_intervals.png "Posterior confidence intervals" { height: 500px }
 
-## priors can be used to encode scale information
-
-~~ Center
-
-![weight_height]
-
-~~
-
-Adapted from [@rethinking].
-
-[weight_height]: ../figures/height_weight_regression.png "height weight from data(Howell1)" { height: 700px }
-
-
-## Wide prior 
-
-~~ Center
-
-![wide]
-
-~~
-
-This is sometimes refered to as a non-informative prior
-
-[wide]: ../figures/wide_prior.png "height weight from data(Howell1)" { height: 700px }
-
-## sensible priors
-
-~~ Center
-
-![sensible]
-
-~~
-
-This prior is informative, but in a good way!
-
-[sensible]: ../figures/sensible_prior.png "height weight from data(Howell1)" { height: 700px }
 
 ## nuisance variables
 
-we can add additional variables that help to structure the model but are not present in the posterior
+We can add additional variables that help to define the model but are not present in the posterior
 
-find a good nuisance variable example
+~~ Math
+P(\theta|y) \propto \int P(\theta) P(y|\theta, \nu) d\nu
+~~ 
+
 
 # Using the posterior
 
@@ -196,7 +181,7 @@ E_y[\theta]  = \sum_{\theta \in \Omega} \theta P(\theta|y)
 ## Posterior approximations
 
 ~ Center
-![Posterior samples and posterior density](../figures/posterior_samples.png)
+![Posterior samples and posterior density](../figures/posterior_samples.png){height: 500px}
 ~
 
 ## Posterior approximations
@@ -212,7 +197,7 @@ For example, the posterior mean is just:
 
 ## Other quantities
 
-- any other functions of the parameters can be estimated from the samples
+- Any other functions of the parameters can be estimated from the samples
 - The most common use is to calculate contrasts
 
 ## Constrasts
@@ -251,5 +236,43 @@ And a set of priors on the parameters:
   - Knowledge of scale (height $\sim$ weight example)
   - Experimental design (more in the hierarchical models class)
   - Using simulations to understand the implications of priors
-- Hard conditions
+- Hard constraints
   - restricted domains (e.g. variance must be positive)
+
+
+## priors can be used to encode scale information
+
+~~ Center
+
+![weight_height]
+
+~~
+
+Adapted from [@rethinking].
+
+[weight_height]: ../figures/height_weight_regression.png "height weight from data(Howell1)" { height: 500px }
+
+
+## Wide prior 
+
+~~ Center
+
+![wide]
+
+~~
+
+This is sometimes refered to as a non-informative prior
+
+[wide]: ../figures/wide_prior.png "height weight from data(Howell1)" { height: 500px }
+
+## sensible priors
+
+~~ Center
+
+![sensible]
+
+~~
+
+This prior is informative, but in a good way!
+
+[sensible]: ../figures/sensible_prior.png "height weight from data(Howell1)" { height: 500px }

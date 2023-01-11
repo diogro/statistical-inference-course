@@ -16,13 +16,37 @@ Package       : pst-plot
 
 # why do we need computational methods?
 
+There is no general method to find high probability regions in arbritary probability distributions
+
 ## curse of dimentionality 
+
+- For simple parameters spaces, we can do grid search or some brute force method to find high probability regions
+
+- This breaks down quickly as the number of parameters increases
+
+## high dimensional watermelons are awful 
+
+![](../figures/watermelon.svg)
+
 
 ## typical set 
 
+~ Center
+![](../figures/typical_set.svg){ width: 500px }
+~
+
 ## finding high probability regions
 
+~ Center
+![](../figures/typical_set2.png){ width: 600px }
+~
+
 ## mcmc method
+
+~ Center
+![](../figures/MCMC_typical.png){ height: 600px }
+~
+
 
 ## types of samplers
 

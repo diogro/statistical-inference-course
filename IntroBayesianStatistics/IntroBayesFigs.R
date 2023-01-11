@@ -11,17 +11,17 @@ library(extrafont)
 library(tidyverse)
 library(stats4)
 
-font_import()
-loadfonts(device = "win", quiet = TRUE) 
+#font_import()
+loadfonts(device = "all", quiet = TRUE) 
 
 ggplot(data.frame(x = rnorm(1000)), aes(x)) +
   geom_histogram(aes(y = ..density..), bins=2^6, colour="white", fill="DarkGray") +
   geom_function(fun = dnorm, colour = 2, linewidth  = 2) + theme_cowplot() +
   labs(x = expression(theta))
 
-fig.height = 800
+fig.height = 500
 fig.width = fig.height * 1.2
-axis.font.size = 20
+axis.font.size = 30
 figure.font = "Calibri"
 
 ### Posterior samples
@@ -50,6 +50,7 @@ LL <- function(mu, beta) {
 estimate = mle(LL, start = list(mu = 1, beta = 2))
 opt_value_rev = data.frame(x = estimate@coef[1], y = estimate@coef[2])
 d = expand_grid(x = seq(0, 2, 0.05), y = seq(1, 4, 0.05))
+
 d$LL = 0
 for(i in 1:nrow(d)) d$LL[i] = LL(d$x[i], d$y[i])
 png(here::here("figures", "logliksurface.png"), height = fig.height, width = fig.width, bg = "transparent")
@@ -89,6 +90,7 @@ data(Howell1)
 d <- Howell1
 d2 <- d[ d$age >= 18 , ] 
 xbar <- mean(d2$weight) 
+x_range = range(d2$weight)
 
 png(here::here("figures", "height_weight_regression.png"), height = fig.height, width = fig.width, bg = "transparent")
 ggplot(d2, aes(weight, height)) + 

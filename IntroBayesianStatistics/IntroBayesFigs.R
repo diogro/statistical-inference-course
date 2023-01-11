@@ -152,3 +152,39 @@ ggplot() +
         annotate("text", x = 32, y = 274, label = "Tallest person ever (272cm)", 
         size = axis.font.size*0.2, vjust=0, hjust = 0, family = figure.font)
 dev.off()
+
+
+fit = ulam(alist(
+  height ~ normal(mu, sigma),
+  mu <- a + b*weight,
+  a ~ normal(0, 20),
+  b ~ lognormal(0, 1),
+  sigma ~ exponential(1)), 
+  data = list(height = d2$height, 
+              weight = d2$weight),
+  iter = 1000, chains = 4, cores = 4)
+
+precis(fit)
+samples = as_tibble(extract.samples(fit))
+samples
+
+png(here::here("figures", "height_weight_fit.png"), height = fig.height, width = fig.width, bg = "transparent")
+ggplot(d2, aes(weight, height)) + 
+  xlim(x_range[1], x_range[2]) + 
+  geom_point(alpha = 0.5) +
+  geom_abline(data = as.data.frame(samples)[1:30,], aes(intercept = a, slope = b), color= "gray", alpha = 0.7) +
+  geom_abline(intercept = mean(samples$a), slope = mean(samples$b), color = 2, linewidth = 1) +
+  theme_minimal() + labs(x = "weight (kg)", y = "height (cm)") + 
+        geom_vline(xintercept = 0, linewidth = 1) + 
+        theme(title = element_text(size = axis.font.size, color = "#586E75"),
+          axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
+        axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
+        legend.position = "none")
+  dev.off()
+
+png(here::here("figures/height_weight_posteriors.png"), 
+    height = 500, width = 1000, bg = "transparent")
+par(mfrow = c(1, 2))
+dens(samples$a, xlim = c(105, 125), lwd = 5, col = 2, main = expression(alpha))
+dens(samples$b, xlim = c(0.7, 1.1), lwd = 5, col = 2, main = expression(beta))
+dev.off()

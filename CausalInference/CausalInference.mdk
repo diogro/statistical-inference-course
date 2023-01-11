@@ -2,7 +2,7 @@
 Title         : Causal thinking
 Sub Title     : A crash course in good and bad controls
 Author        : Diogo Melo
-Affiliation   : Lewis-Sigler Institute of Intergrative Genomics
+Affiliation   : Lewis-Sigler Institute of Integrative Genomics
 Email         : damelo@princeton.edu
 Reveal Theme  : solarized
 Beamer Theme  : singapore
@@ -21,9 +21,7 @@ Bibliography  : ../shared/references.bib
 
 - small world - large world applications
 
-## causal thinking
-
-- linear models can be used to parse causal effects from confounders
+## Causation and correlation
 
 ## graph model representation
 

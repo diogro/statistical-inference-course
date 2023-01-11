@@ -2,7 +2,7 @@
 Title         : Probabilistic Modeling
 Sub Title     : Introduction to Bayesian Statistics
 Author        : Diogo Melo
-Affiliation   : Lewis-Sigler Institute of Intergrative Genomics
+Affiliation   : Lewis-Sigler Institute of Integrative Genomics
 Email         : damelo@princeton.edu
 Reveal Theme  : solarized
 Beamer Theme  : singapore
@@ -206,7 +206,7 @@ For example, the posterior mean is just:
 ## Other quantities
 
 - Any other functions of the parameters can be estimated from the samples
-- The most common use is to calculate contrasts
+- A common use is to calculate constrast between categorical levels, estimating the difference between groups
 
 ## Constrasts
 
@@ -284,3 +284,69 @@ This is sometimes refered to as a non-informative prior
 This prior is informative, but in a good way!
 
 [sensible]: ../figures/sensible_prior.png "height weight from data(Howell1)" { height: 500px }
+
+## Our model for the height data
+
+~ Begin Columns
+
+~ Column 
+
+![weight_height]
+
+~
+
+~ Column 
+
+~~ Math
+\begin{aligned} 
+  y_i &\sim Normal(\mu_i, \sigma) \\
+  \mu_i &= \alpha + \beta x_i  \\
+  \alpha &\sim Normal(0, 20) \\
+  \beta &\sim lognormal(0, 1) \\
+  \sigma &\sim Exponential(1) \\
+\end{aligned} 
+~~
+
+~
+
+~ End Columns
+
+## Posterior samples
+
+```python
+> samples
+# A tibble: 2,000 × 3
+           a         b     sigma
+   <dbl[1d]> <dbl[1d]> <dbl[1d]>
+ 1      115.     0.889      4.78
+ 2      109.     1.02       5.30
+ 3      112.     0.928      5.07
+ 4      111.     0.949      5.30
+ 5      111.     0.955      5.04
+ 6      115.     0.872      5.19
+ 7      109.     1.01       5.13
+ 8      117.     0.844      5.00
+ 9      115.     0.882      4.94
+10      112.     0.939      4.95
+# … with 1,990 more rows
+```
+
+## Posterior mean estimates
+
+```
+> colMeans(samples)
+          a           b       sigma 
+112.9296580   0.9253803   5.0453651 
+```
+
+## Model fit
+
+~ Center
+![](../figures/height_weight_fit.png){height: 500px}
+~
+
+## Posterior parameter distribution
+
+~ Center
+![](../figures/height_weight_posteriors.png){height: 500px}
+~

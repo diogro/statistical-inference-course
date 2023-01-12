@@ -1,5 +1,5 @@
 [INCLUDE=present.mdk]
-Title         : bayesian model fitting
+Title         : Bayesian model fitting
 Sub Title     : MCMC sampling
 Author        : Diogo Melo
 Affiliation   : Lewis-Sigler Institute of Integrative Genomics
@@ -76,21 +76,37 @@ Package       : pst-plot
 ~
 
 
-## MCMC samplers
+## MCMC samplers 
 
-- {.fragment} Metropolis–Hastings algorithm (easiest to implement, but slow.)
+- {.fragment} Metropolis–Hastings algorithms (broad class of samplers, very general)
+  - Most methods in the wild are some flavor of this 
 - {.fragment} Reversible Jump MCMC (used in many phylogenetic packages)
+  - Allows for posterior distributions with variable dimensionality
+- {.fragment} Usable non-mcmc methods: R-INLA - integrated nested Laplace approximation.
+  - Great for structural equation modeling, much faster for some classes of models
+
+## MCMC samplers 2
+
 - {.fragment} Gibbs samplers
     - Mostly surpassed, but still in wide use.
+    - Can sample discrete parameters.
     - Requires particular types of priors.
     - Software: WinBugs, Bugs, Jags...
 - {.fragment} Hamiltonian Monte Carlo samplers
     - Latest generations samplers.
     - Fast and general.
+    - Discrete parameters must be integrated.
     - Can fit dynamic models using differential equations.
     - Software: PyMC3, Edward, Stan (rethinking engine)...
 
-- {.fragment} Usable non-mcmc methods: R-INLA - integrated nested Laplace approximation.
+
+## what makes these samplers different?
+
+Basically the transition proposal distribution 
+
+~ Math
+P(\theta_{i+1} | \theta_i)
+~
 
 
 ## Our model from yesterday
@@ -110,7 +126,7 @@ Package       : pst-plot
 ~ Begin Columns
 
 ~ Column 
-Model:
+Model
 ~~~ Math
 \begin{aligned} 
   y_i &\sim Normal(\mu_i, \sigma) \\
@@ -123,7 +139,7 @@ Model:
 ~
 
 ~ Column 
-Code:
+Code
  ```python
  # Data
 library(rethinking)
@@ -168,10 +184,17 @@ model{
 }
 ```
 
-## tricks and simulations
+## Sampler arguments
 
-## interacting with the posterior samples
+- Chains
+- Cores
+- Iterations
+- Warm-up (or burn-in)
+
+## Chains
 
 ## convergence metrics
+
+## interacting with the posterior samples
 
 ## getting posterior estimates

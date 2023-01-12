@@ -1,6 +1,6 @@
 [INCLUDE=present.mdk]
 Title         : Causal thinking
-Sub Title     : A crash course in good and bad controls
+Sub Title     : Linking Scientific and statistical models
 Author        : Diogo Melo
 Affiliation   : Lewis-Sigler Institute of Integrative Genomics
 Email         : damelo@princeton.edu
@@ -407,6 +407,14 @@ Not all parameter estimates are causal estimates!
 
 ## good controls
 
+- {.fragment} Block non-causal paths 
+- {.fragment} Improve precision
+- {.fragment} Allow inference of causal effects
+
+
 ## bad controls
 
-
+- {.fragment} Block causal paths (blocking pipes)
+- {.fragment} Open non-causal paths (opening pipes colliders)
+- {.fragment} Reduce precision
+- {.fragment} Prevent causal inference

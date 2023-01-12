@@ -174,7 +174,7 @@ sigma  1.09 0.08 0.97  1.22  1200     1
 
 ## Examples of forks or confounders 
 
-This is the quintessential "control" variable. Most variables are included in the model under the assumption that they are confounders and need to be controled for to give correct estimates.
+This is the quintessential "control" variable. Most variables are included in the model under the assumption that they are confounders and need to be controlled for to give correct estimates.
 
 ~ Center
 ![xy_fork]
@@ -193,7 +193,7 @@ Famously, R. A. Fisher was not convinced that smoking caused cancer, and propose
 Maybe want to evaluate the effect of some predator on the distribution of a prey. But the spacial distribution of both the predator and the prey are affected by some abiotic factor:
 
 ~ Center
-![](../figures\species_predator.png){ width: 400px }
+![](../figures/species_predator.png){ width: 400px }
 ~
 
 # Pipe
@@ -253,7 +253,7 @@ m1 = ulam(alist(
 ```
 
 ~ Center
-![Non corrected confounder](../figures/x-y_pipe_non_corrected.png)
+![Non corrected confounder](../figures/x-y_pipe_non_corrected.png){height: 400px}
 ~
 
 ## Including the mediator
@@ -269,7 +269,7 @@ m2 = ulam(alist(
 ```
 
 ~ Center
-![Corrected confounder](../figures/x-y_pipe_corrected.png)
+![Corrected confounder](../figures/x-y_pipe_corrected.png){height: 400px}
 ~
 
 ## Pipe vs Fork
@@ -291,22 +291,21 @@ Including a mediator in our models can have catastrophic effects. A common mista
 If we are evaluating the effectiveness of a fungal treatment, most of the effect of the treatment could be mediated by the presence of fungus. So, using presence of fungus in our model would mask the effect of the treatment.
 
 ~ Center
-![](../figures\fungal_treatment.png)
+![](../figures/fungal_treatment.png)
 ~
 
 
 ## Conditioning on Posttreatment Variables
 
 ~ Center
-![](../figures\post_treatment_paper.png
-)
+![](../figures/post_treatment_paper.png){height: 400px}
 ~
 
 - Montgomery, J.M., Nyhan, B. and Torres, M. (2018)
 - American Journal of Political Science, 62: 760-775. 
 - https://doi.org/10.1111/ajps.12357
 
-# Colider
+# Collider
 
 ## No effect of x on y, but both affect z
 
@@ -327,7 +326,7 @@ z &\sim Normal(\alpha_z + \beta_{zx}x + \beta_{zy}y, \sigma_z) \\
 \end{aligned}
 ~
 
-## Model without the colider
+## Model without the collider
 
 ~ Center
 ![xy_colider2]
@@ -361,10 +360,10 @@ m1 = ulam(alist(
 ```
 
 ~ Center
-![Non corrected colider](../figures/x-y_colider_non_corrected.png)
+![Non corrected collider](../figures/x-y_colider_non_corrected.png){height: 400px}
 ~
 
-## $P(\beta_{yx}|x, y)$ with the colider
+## $P(\beta_{yx}|x, y)$ with the collider
 <!-- $  -->
 
 ``` python
@@ -378,10 +377,10 @@ m2 = ulam(alist(
 ```
 
 ~ Center
-![corrected colider](../figures/x-y_colider_corrected.png)
+![corrected collider](../figures/x-y_colider_corrected.png){height: 400px}
 ~
 
-## Coliders can cause our samples to be biased 
+## Colliders can cause our samples to be biased 
 
 ~ Begin Columns
 
@@ -401,6 +400,10 @@ If we represent our putative causal relations using DAGs, we have a set of rules
 - Automated tool: [dagitty.net](http://www.dagitty.net/dags.html)
 
 ## Back door criterion
+
+## Table two fallacy
+
+Not all parameter estimates are causal estimates!
 
 ## good controls
 

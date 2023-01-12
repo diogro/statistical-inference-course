@@ -154,16 +154,20 @@ ggplot() +
 dev.off()
 
 
+ # Data
+library(rethinking)
+d2 <- Howell1[ d$age >= 18 , ] 
+
+# Model
 fit = ulam(alist(
-  height ~ normal(mu, sigma),
-  mu <- a + b*weight,
+  y ~ normal(mu, sigma),
+  mu <- a + b*x,
   a ~ normal(0, 20),
   b ~ lognormal(0, 1),
   sigma ~ exponential(1)), 
-  data = list(height = d2$height, 
-              weight = d2$weight),
+  data = list(y = d2$height, 
+              x = d2$weight),
   iter = 1000, chains = 4, cores = 4)
-
 precis(fit)
 samples = as_tibble(extract.samples(fit))
 samples

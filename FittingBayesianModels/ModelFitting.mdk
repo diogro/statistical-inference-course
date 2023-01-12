@@ -2,7 +2,7 @@
 Title         : bayesian model fitting
 Sub Title     : MCMC sampling
 Author        : Diogo Melo
-Affiliation   : Lewis-Sigler Institute of Intergrative Genomics
+Affiliation   : Lewis-Sigler Institute of Integrative Genomics
 Email         : damelo@princeton.edu
 Reveal Theme  : solarized
 Beamer Theme  : singapore
@@ -14,11 +14,39 @@ Package       : pst-plot
 
 [TITLE]
 
-# why do we need computational methods?
+## Model fit
 
-There is no general method to find high probability regions in arbritary probability distributions
+~ Center
+![](../figures/height_weight_fit.png){height: 500px}
+~
 
-## curse of dimentionality 
+## Posterior samples
+
+```python
+> samples
+# A tibble: 2,000 × 3
+           a         b     sigma
+   <dbl[1d]> <dbl[1d]> <dbl[1d]>
+ 1      115.     0.889      4.78
+ 2      109.     1.02       5.30
+ 3      112.     0.928      5.07
+ 4      111.     0.949      5.30
+ 5      111.     0.955      5.04
+ 6      115.     0.872      5.19
+ 7      109.     1.01       5.13
+ 8      117.     0.844      5.00
+ 9      115.     0.882      4.94
+10      112.     0.939      4.95
+# … with 1,990 more rows
+```
+
+# How to get posterior samples?
+
+- There is no general method to find high probability regions in arbitrary probability distributions.
+
+- This mean most models are fit using purely computational methods.
+
+## curse of dimensionality 
 
 - For simple parameters spaces, we can do grid search or some brute force method to find high probability regions
 
@@ -48,9 +76,97 @@ There is no general method to find high probability regions in arbritary probabi
 ~
 
 
-## types of samplers
+## MCMC samplers
 
-## example fitting 
+- {.fragment} Metropolis–Hastings algorithm (easiest to implement, but slow.)
+- {.fragment} Reversible Jump MCMC (used in many phylogenetic packages)
+- {.fragment} Gibbs samplers
+    - Mostly surpassed, but still in wide use.
+    - Requires particular types of priors.
+    - Software: WinBugs, Bugs, Jags...
+- {.fragment} Hamiltonian Monte Carlo samplers
+    - Latest generations samplers.
+    - Fast and general.
+    - Can fit dynamic models using differential equations.
+    - Software: PyMC3, Edward, Stan (rethinking engine)...
+
+- {.fragment} Usable non-mcmc methods: R-INLA - integrated nested Laplace approximation.
+
+
+## Our model from yesterday
+
+~~ Math
+\begin{aligned} 
+  y_i &\sim Normal(\mu_i, \sigma) \\
+  \mu_i &= \alpha + \beta x_i  \\
+  \alpha &\sim Normal(0, 20) \\
+  \beta &\sim lognormal(0, 1) \\
+  \sigma &\sim Exponential(1) \\
+\end{aligned} 
+~~
+
+## Code in rethinking
+
+~ Begin Columns
+
+~ Column 
+Model:
+~~~ Math
+\begin{aligned} 
+  y_i &\sim Normal(\mu_i, \sigma) \\
+  \mu_i &= \alpha + \beta x_i  \\
+  \alpha &\sim Normal(0, 20) \\
+  \beta &\sim lognormal(0, 1) \\
+  \sigma &\sim Exponential(1) \\
+\end{aligned} 
+~~~
+~
+
+~ Column 
+Code:
+ ```python
+ # Data
+library(rethinking)
+d2 <- Howell1[ d$age >= 18 , ] 
+
+# Model
+ulam(alist(
+  y ~ normal(mu, sigma),
+  mu <- a + b * x,
+  a ~ normal(0, 20),
+  b ~ lognormal(0, 1),
+  sigma ~ exponential(1)), 
+  data = list(y = d2$height, 
+              x = d2$weight),
+  iter = 1000, chains = 4, cores = 4)
+  ```
+~ 
+
+~ End Columns
+
+## rethinking generates stan code
+
+```
+data{
+    vector[352] y;
+    vector[352] x;
+}
+parameters{
+    real a;
+    real<lower=0> b;
+    real<lower=0> sigma;
+}
+model{
+    vector[352] mu;
+    sigma ~ exponential( 1 );
+    b ~ lognormal( 0 , 1 );
+    a ~ normal( 0 , 20 );
+    for ( i in 1:352 ) {
+        mu[i] = a + b * x[i];
+    }
+    y ~ normal( mu , sigma );
+}
+```
 
 ## tricks and simulations
 

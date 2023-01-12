@@ -134,7 +134,7 @@ Isn't the MAP the best estimator? (depends on the criteria...)
 - $P(\theta|y)$ represents our knowledge of parameters using probability 
   - this representation fully encapsulates our beliefs
 - $P(\theta)$, the prior, can encode useful information
-    - parameter scale, shared structure, permited values...
+    - parameter scale, shared structure, permitted values...
 - Expands the range of models we can fit
 - Allows us to use probability in more contexts
 
@@ -206,9 +206,9 @@ For example, the posterior mean is just:
 ## Other quantities
 
 - Any other functions of the parameters can be estimated from the samples
-- A common use is to calculate constrast between categorical levels, estimating the difference between groups
+- A common use is to calculate contrast between categorical levels, estimating the difference between groups
 
-## Constrasts
+## Contrasts
 
 Figure of contrasts
 

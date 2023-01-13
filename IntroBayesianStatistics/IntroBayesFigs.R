@@ -60,7 +60,7 @@ ggplot(data = d) +
   geom_point(data = opt_value_rev, aes(x = x, y = y), 
   color = "orange", size = 4, shape = 4, stroke = 2) +
   scale_fill_viridis_c(option = "A") + 
-  labs(x = TeX('$\\mu$'), y =  TeX('$\\beta$')) +
+  labs(x = TeX('$\\alpha$'), y =  TeX('$\\beta$')) +
   theme_minimal() +
   theme(axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),

@@ -86,7 +86,7 @@ P(AB) = P(A|B)P(B) = P(B|A)P(A)
 
 We can think of Bayesian Statistics as an extension of ML
 
-- ML: What is the parameter value with the highest probability of having generated the data:
+- ML: What is the parameter value that maximizes the probability of having generated the data:
 
   ~ Center
   ~~ Math { padding:.3em; \
@@ -100,7 +100,7 @@ We can think of Bayesian Statistics as an extension of ML
   ~~
   ~
 
-- Bayes: What the distribution of parameter values given the data:
+- Bayes: What is the probability distribution of parameter values given the data:
   ~ Center
   ~~ Math { padding:.3em; \
     background-color:floralwhite; \
@@ -113,13 +113,21 @@ We can think of Bayesian Statistics as an extension of ML
   ~~
   ~
 
-## Probability Theory: The Logic of Science (2003)
+## Probability Theory: The Logic of Science [-@jaynes2003]
 
 ~ Center
 ![](../figures/jaynes_book.jpeg){height: 500px}
 ~ 
+
 By Edwin Thompson Jaynes (1922 – 1998) 
 
+## Statistical rethinking [-@rethinking]
+
+~ Center
+![](../figures/rethinking_book.jpg){height: 500px}
+~ 
+
+By Richard McElreath ([youtube.com/\@rmcelreath](https://www.youtube.com/@rmcelreath))
 
 ## Prior $\times$ Likelihood $\propto$ Posterior
 
@@ -129,14 +137,14 @@ By Edwin Thompson Jaynes (1922 – 1998)
 
 ## why use the posterior?
 
-Isn't the MAP the best estimator? (depends on the criteria...)
-
-- $P(\theta|y)$ represents our knowledge of parameters using probability 
-  - this representation fully encapsulates our beliefs
-- $P(\theta)$, the prior, can encode useful information
-    - parameter scale, shared structure, permitted values...
-- Expands the range of models we can fit
 - Allows us to use probability in more contexts
+- {.fragment} $P(\theta|y)$ represents our knowledge of parameters using probability 
+  - this representation fully encapsulates our beliefs
+- {.fragment} $P(\theta)$, the prior, can encode useful information
+    - parameter scale, shared structure, permitted values...
+- {.fragment} Isn't the MLE the best estimator? (depends on the criteria...)
+  - Sometimes... but not $\mu = f(\hat{\theta})$ 
+- {.fragment} Expands the range of models we can fit
 
 ## confidence intervals
 
@@ -208,9 +216,35 @@ For example, the posterior mean is just:
 - Any other functions of the parameters can be estimated from the samples
 - A common use is to calculate contrast between categorical levels, estimating the difference between groups
 
-## Contrasts
+## Categorial predictors
 
-Figure of contrasts
+We can also use categorical predictors to estimate per-group averages. 
+
+- $K_i$: caloric content of milk in several monkey groups
+- $CLADE$: categorical variable for the monkey groups
+
+~~ Math
+\begin{aligned}
+  K_i &\sim Normal(\mu_i, \sigma) \\
+  \mu_i &= \alpha_{CLADE[i]} \\
+  \alpha_i &\sim Normal(0, 0.5) \\
+  \sigma &\sim Exponential(1)
+\end{aligned}
+~~
+
+## Per clade milk content
+
+~ Center
+![](../figures/milk_model_coef.png)
+~
+
+## contrasts
+
+To compare coefficient estimates we must look at the distribution of differences
+
+~ Center
+![](../figures/milk_model_constrast.png)
+~
 
 # Building a model
 
@@ -240,13 +274,22 @@ And a set of priors on the parameters:
 
 ## How do we choose the priors?
 
-- Using domain expertise 
+- Agnostic choices
+  - Laplace and the Principle of indifference
+  - "Uninformative" priors
+- {.fragment} Maximum entropy priors
+  - priors that encode the least amount of information given constraints
+- {.fragment} Jeffreys priors
+  - invariant under a change of coordinates
+- {.fragment} Hard constraints
+  - restricted domains (e.g. variance must be positive)
+
+## Good prior choices
+
+- Use domain expertise!
   - Knowledge of scale (height $\sim$ weight example)
   - Experimental design (more in the hierarchical models class)
   - Using simulations to understand the implications of priors
-- Hard constraints
-  - restricted domains (e.g. variance must be positive)
-
 
 ## priors can be used to encode scale information
 
@@ -256,7 +299,7 @@ And a set of priors on the parameters:
 
 ~~
 
-Adapted from [@rethinking].
+Adapted from @rethinking.
 
 [weight_height]: ../figures/height_weight_regression.png "height weight from data(Howell1)" { height: 500px }
 
@@ -269,17 +312,15 @@ Adapted from [@rethinking].
 
 ~~
 
-This is sometimes refered to as a non-informative prior
+This is sometimes called a non-informative prior
 
 [wide]: ../figures/wide_prior.png "height weight from data(Howell1)" { height: 500px }
 
 ## sensible priors
 
-~~ Center
-
+~ Center
 ![sensible]
-
-~~
+~
 
 This prior is informative, but in a good way!
 
@@ -350,3 +391,7 @@ This prior is informative, but in a good way!
 ~ Center
 ![](../figures/height_weight_posteriors.png){height: 500px}
 ~
+
+# References
+
+[BIB]

@@ -192,3 +192,48 @@ par(mfrow = c(1, 2))
 dens(samples$a, xlim = c(105, 125), lwd = 5, col = 2, main = expression(alpha))
 dens(samples$b, xlim = c(0.7, 1.1), lwd = 5, col = 2, main = expression(beta))
 dev.off()
+
+## Constrasts
+
+data(milk)
+d <- milk
+levels(d$clade)
+d$clade_id <- as.integer( d$clade )
+d$K <- standardize( d$kcal.per.g )
+m5.9 <- ulam(
+  alist(
+    K ~ normal( mu , sigma ),
+    mu <- a[clade_id],
+    a[clade_id] ~ normal( 0 , 0.5 ),
+    sigma ~ exponential( 1 )
+  ) , data=d[,c("K", "clade_id")] )
+labels <- paste("a[" , 1:4 , "]:" , levels(d$clade) , sep="" )
+
+sample = as.data.frame(extract.samples(m5.9))
+png("figures/milk_model_coef.png", height = 500, width = 1000, bg = "transparent")
+mcmc_intervals(sample,
+           pars = c("a.1", "a.2", "a.3", "a.4"),
+           prob = 0.5, prob_outer = .9) + theme_minimal() +
+  geom_vline(xintercept = 0, linewidth = 1) + 
+  scale_y_discrete(labels = levels(d$clade)) +
+  labs(x = "expected kcal (std)") +
+  theme(axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
+        axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
+        legend.position = "none")
+dev.off()
+
+sample$diff_23 = sample$a.2 - sample$a.3
+png("figures/milk_model_constrast.png", height = 500, width = 1000, bg = "transparent")
+mcmc_dens(sample,
+               pars = c("diff_23"),
+               prob = 0.5, prob_outer = .9) + theme_minimal() +
+  geom_vline(xintercept = 0, linewidth = 1) + 
+  labs(x = "Difference between New and Old Monkeys") +
+  theme(title = element_text(size = axis.font.size, 
+                                  family = figure.font, color = "#586E75"),
+    axis.title = element_text(size = axis.font.size, 
+                                  family = figure.font, color = "#586E75"), 
+        axis.text = element_text(size = axis.font.size*0.8,
+                                 family = figure.font, color = "#586E75"),
+        legend.position = "none")
+dev.off()

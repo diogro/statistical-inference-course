@@ -77,8 +77,8 @@ dev.off()
 
 library(evolqg)
 N = 10000
-x = array(NA, dim = c(N, 20))
-for(d in 1:20){
+x = array(NA, dim = c(N, 30))
+for(d in 1:30){
   samples = matrix(rnorm(d*N), ncol = d)
   x[,d] = apply(samples, 1, Norm)
 }
@@ -86,8 +86,8 @@ for(d in 1:20){
 library(ggridges)
 library(gganimate)
 melt_x = reshape2::melt(x)
-ggplot(melt_x, aes(value, group = Var2, fill = as.factor(Var2))) + 
-  geom_histogram(alpha = 0.8)  + scale_fill_viridis_d() + 
+anim = ggplot(melt_x, aes(value, group = Var2, fill = as.factor(Var2))) + 
+  geom_histogram(alpha = 0.8, bins = 100)  + scale_fill_viridis_d() + 
   theme_cowplot() +
   labs(x = "Distance from distribution mean") + 
   theme(legend.position = "none") + 
@@ -98,8 +98,14 @@ ggplot(melt_x, aes(value, group = Var2, fill = as.factor(Var2))) +
                                                axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
                                                axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
                                                legend.position = "none")
+anim_save(filename = "figures/typical_set.gif", animation = anim ) 
 
-
-
-
-
+png(here::here("figures", "2d_gauss.png"), height = fig.height, width = fig.width, bg = "transparent")
+ggplot(data.frame(x = x[,2]), aes(x)) + geom_histogram(bins = 100) +
+  theme_minimal() + labs(x = "Distance from mean (2d)", y = "Count") + 
+  geom_vline(xintercept = 0, linewidth = 1) + 
+  theme(title = element_text(size = axis.font.size, color = "#586E75"),
+        axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
+        axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
+        legend.position = "none")
+dev.off()

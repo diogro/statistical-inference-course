@@ -70,7 +70,7 @@ y \sim Normal(\alpha + \beta x, \sigma)
 # rev thomas bayes (1701 – 1761)
 
 ~~ Center
-![](../figures/thomas_bayes.gif){height: 500px}
+![](../figures/thomas_bayes.png){height: 500px}
 ~~
 
 # Product rule (or Bayes Theorem)

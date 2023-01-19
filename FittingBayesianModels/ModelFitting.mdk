@@ -65,14 +65,21 @@ Package       : pst-plot
 
 ## Multivariate gaussians
 
+~ Center
+![](../figures/MultivariateNormal.png){ width: 500px }
+~
 
+## Distance from mean in 2 dimensions
+
+~ Center
+![](../figures/2d_gauss.png){ width: 500px }
+~
 
 ## Gaussian typical set
 
 ~ Center
 ![](../figures/typical_set.gif)
 ~
-
 
 ## finding high probability regions
 

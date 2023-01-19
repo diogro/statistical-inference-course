@@ -1,8 +1,8 @@
 ---
-title: "Bayesian Model Fitting Tutorial"
+title: "Causal model building"
 description: |
 author: "Diogo Melo"
-date: '2023-01-12'
+date: '2023-01-24'
 output: 
     distill::distill_article
 editor_options: 
@@ -13,175 +13,125 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Instaling the rethinking package
+# dagitty package
 
-We are going to use rethinking, a simpler model fitting package designed for a teaching environment. If you have rethinking installed, jump to the next section.
+Much of the causal implications contained in DAGs can be analised automatically. 
+The dagitty package provides functions for this.
 
-First we need to install rstan:
-
-```{r, eval = FALSE}
-install.packages("rstan", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
-
+```{r}
+if(!require("dagitty")) install.packages("dagitty")
+library(dagitty)
 ```
 
-Next, the rethinking package:
+# Good controls
 
-```{r, eval = FALSE}
-install.packages(c("coda","mvtnorm","remotes", "loo", "bayesplot"))
-library(remotes)
-remotes::install_github("rmcelreath/rethinking")
+When fitting causal models, it is often necessary to add covariates to a linear model in order to correctly identify the effect of interest. This means running a muiltiple regression in which one of the coefficients is related to the causal path of interest, and the others are added to the model in order to block non-causal paths. Many of the examples in this tutorial are from [Cinelli, Carlos, Andrew Forney, and Judea Pearl. "A crash course in good and bad controls." Sociological Methods & Research (2021): 00491241221099552.](https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf)
+
+For example, in the following DAGs, where X, Y and Z are observed, and U is unobserved:
+
+![](../figures/DAGS/good_controls_1.png)
+
+There is always a shared common cause between X and Y, and estimating the effect of X on Y requires blocking this non-causal path. The variable Z can be used as a covariate in all cases, even in the presence of the unobserved confound U.
+
+Let's check this by simulating the DAG in model 2:
+
+```{r}
+N = 100
+U = rnorm(N)
+b_zu = 0.5
+Z = rnorm(N, b_zu * U)
+b_xz = 0.8
+X = rnorm(N, b_xz * Z)
+b_yu = 1
+b_yx = 1
+Y = rnorm(N, b_yu * U + b_yx * X)
+
+lm(Y ~ X) |> coef() # Biased by non-causal path, effect of X is overestimated
+lm(Y ~ X + Z) |> coef() # Unbiased, effect of X is correct and equal to b_yx
 ```
 
-cmdstanR is also a great way to have a more stable R environment:
 
-```{r, eval = FALSE}
-# we recommend running this is a fresh R session or restarting your current session
-install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+The same logic applies if the confound is mediated by another variable M:
+
+![](../figures/DAGS/good_controls_2.png)
+
+Z should be added as a covariate in all of these cases. 
+
+
+__Question__: If we are interested in the effect of X on Y, could M also be added to the model? Explain.
+
+__Exercise__: Choose one of these DAGs and run a simulation, explore the effect of adding Z or M as covariates.
+
+## Pretty good controls
+
+Some covariates can be added to a model not to avoid bias, but to increase precision. For example, in the following DAG:
+
+```{r, out.height=100, out.width=100, echo=FALSE}
+knitr::include_graphics("../figures/DAGS/pretty_good.png")
 ```
 
-Next, install cmdstan:
+Adding Z as a covariate increases the precision of the estimate of the effect of X on Y.
 
-```{r, eval = FALSE}
-install_cmdstan()
-```
+Again, let's check using simulations:
 
-Now we should be good to go!
-
-# Defining a model in the rethinking package
-
-The rethinking syntax closely mirrors the mathematical notation we have been using in class.
-For example, a simple linear regression of $y_i$ on $x_i$ can be defined as, using some standard-ish priors:
-
-$$
-\begin{aligned} 
-  y_i &\sim Normal(\mu_i, \sigma) \\
-  \mu_i &= \alpha + \beta x_i  \\
-  \alpha &\sim Normal(0, 1) \\
-  \beta &\sim Normal(0, 1) \\
-  \sigma &\sim Exponential(1) \\
-\end{aligned} 
-$$
-This translates to the following code, including some simulated data:
-
-```{r, eval = TRUE, message=FALSE, warning=FALSE}
+```{r}
+set.seed(2)
 library(rethinking)
-N = 100 # sample size
+N = 200
+X = rnorm(N)
+Z = rnorm(N)
+b_yx = 1
+b_yz = 2
+Y = rnorm(N, b_yx * X + b_yz * Z)
 
-# Linear regression parameters
-alpha = 1 # Intercept
-beta = 1  # slope on x
- 
-x = rnorm(N)                    # Simulated independent variable. Mean = 0 and sd = 1
-y = alpha + beta * x + rnorm(N) # Response variable, with residual sd = 1
-
-# Rethinking code
-m1 = ulam(alist(
-  y ~ normal(mu, sigma),     # Likelihood
-  mu <- a + b * x,           # Linear model
-  a ~ normal(0, 1),          # Prior on intercept
-  b ~ normal(0, 1),          # Prior on slope
-  sigma ~ exponential(1)),   # Prior on residual variance
-  data = list(y = y, x = x), # Data list
-  iter = 1000, chains = 4, cores = 4, refresh = 0) # Sampler control parameters
-precis(m1, digits = 2) # Summary of model fit
+yx = lm(Y ~ X) |> extract.samples()
+yxz = lm(Y ~ X + Z) |> extract.samples()
+dens(yxz$X, lwd = 2, col = 2, xlim = c(0.4, 1.65), xlab = "b_yx")
+dens(yx$X, lwd = 2, col = 1, add =TRUE)
 ```
 
-The precis() function generates a simple summary table of fitted coefficients. 
+This happens because adding the covariate removes part of the variation in Y that is not associated with X. 
 
-__Exercise:__ Fit the same model using the lm() function in R, and compare the summary of the two fitted models. 
+__Question__: What if Z is a cause of X, not of Y. Would adding it to the regression help in this case?
 
-## Getting the generated Stan code
+# Bad controls
 
-Some models are too complicated to fit in the simple rethinking syntax. For these models we have to write Stan code directly. We can start to see how these models are structured by looking at the Stan code rethinking generates.
+## AIC and significance won't help you
 
-```{r, fold = TRUE}
-writeLines(m1@model)
-```
-
-Note the different code blocks for declaring the different parts of the model (data, parameters, and model). Also note the need to declare all variables and their domain constraints. We will see more complicated Stan models later in the course.
-
-## Checking convergence
-
-Running multiple independent MCMC chains allows us to check if the chains converged
-to the same parameter values. Ideally, all chains should jump around the same values, without
-getting stuck on some value and without much similarity between subsequent values. Let's plot the 4 chains:
+To explore the effect of a bad control variable, let's simulate a collider:
 
 ```{r}
-trankplot(m1)
+# DAG : X -> Z <- Y
+N = 200
+X = rnorm(N)
+Y = rnorm(N)
+Z = rnorm(N, Y + X)
+
+m1 = lm(Y~X)   # Correct model
+m2 = lm(Y~X+Z) # Model including the collider
 ```
 
-These look fine. 
-
-There are also diagnostics calculated on multiple chains to check for convergence.
-The most common one is the R-hat diagnostic, which measures the ratio of the within and between chain variance. If the chains converged to the same value, R-hat should be very close to 1. The precis() summary outputs the R-hat for all parameters by default.
-
-There are other more advanced diagnostics in Stan models, which can be very powerful and allow us to identify ill behaved models. See this [post](https://mc-stan.org/misc/warnings.html) for more.
-
-## Ploting the posterior
-
-When we are using simulated data, we can compare the posterior estimates to the known parameters. The [bayesplot package](https://mc-stan.org/bayesplot/) provides several functions for visualizing the posterior:
+First, let's look at the significance of the variables in both models:
 
 ```{r}
-library(bayesplot)
-samples = as.data.frame(extract.samples(m1))
-mcmc_recover_hist(samples[,c("a", "b")] , true = c(alpha, beta))
+summary(m1)
+summary(m2)
 ```
 
-## Ploting the data and the regression
+Not including Z gives the correct estimate of no effect of X on Y, but the model including Z tells us that both X and Z have significant effects on Y. Why is this?
 
-Now we can evaluate the model fit to the simulated data. First, let's draw a few regression
-lines from the posterior. This will give us some idea about the uncertainty in the regression line.
+How about AIC?
 
 ```{r}
-plot(y~x, pch = 19)
-for(i in 1:30)
-  abline(a = samples[i,"a"], b = samples[i,"b"], col = adjustcolor(2, alpha = 0.3))
-```
-
-We can also include the mean posterior estimate of the regression line:
-
-```{r}
-# Posterior mean estimates of the parameters
-coef = colMeans(samples)
-
-plot(y~x, pch = 19)
-abline(a = coef["a"], b = coef["b"], col= 2, lwd = 2)
-```
-
-While looking at the fitted model against the data is usually more informative, we can also plot the coeficient estimates directly. It is sometimes difficult to interpret coeficients dirrectly, but with some practice numerical estimates can be useful in inference.
-
-A basic confidence interval plot can be generated by calling the plot function on the precis() output table:
-
-```{r}
-plot(precis(m1), xlim =c(-0.1, 1.5))
+AIC(m1, m2)
 ```
 
 
-## Posterior predictive checks
+# Practice DAGs
 
-One powerful concept in Bayesian models is of simulated data from the posterior. Ideally, we would like the posterior distribution to generate simulated data that is compatible with the data used to fit the model. If we can not reproduce some relevant aspect of the data given the fitted model, it is usually a sign that the model needs to be modified.
+For each of the following DAGs form the rethinking book, write down the correct models for estimating the total causal influence of X on Y:
 
-Here, we generate 30 simulated data sets from the posterior:
-
-```{r}
-n_samples = 30
-simulated_data = array(NA, dim = c(N, n_samples))
-for(k in 1:n_samples)
-  simulated_data[,k] = rnorm(N, 
-                             mean = samples[k, "a"] + samples[k, "b"] * x, 
-                             sd = samples[k, "sigma"])
-
-plot(y~x, pch = 19)
-for(k in 1:n_samples)
-  points(simulated_data[,k]~x, col = adjustcolor(2, alpha = 0.2))
-
+```{r, out.height=100, out.width=400, out.height=285, echo=FALSE}
+knitr::include_graphics("../figures/dags_6M3.png")
 ```
 
-One useful technique is to compare some tail percentile from the posterior predictive distribution to the observed percentile. This can identify problems at the extreme tails of the data distribution, where it's harder to get a good fit.
-
-```{r}
-# Comparing the predicted 90% percentile to the observed
-simualated_quantile = apply(simulated_data, 2, quantile, 0.9)
-dens(simualated_quantile, col = 2, lwd = 4) # density of simulated 90% percentiles
-abline(v = quantile(y, 0.9), lwd = 3)       # observed 90% percentile
-```

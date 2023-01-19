@@ -143,7 +143,7 @@ Code
  ```python
  # Data
 library(rethinking)
-d2 <- Howell1[ d$age >= 18 , ] 
+d2 <- Howell1[ Howell1$age >= 18 , ] 
 
 # Model
 ulam(alist(
@@ -191,10 +191,16 @@ model{
 - Iterations
 - Warm-up (or burn-in)
 
-## Chains
+## Chains and convergence
 
-## convergence metrics
+~Center
+![](../figures/trace_plot.png)
+~
 
-## interacting with the posterior samples
-
-## getting posterior estimates
+```
+> precis(fit)
+        mean   sd   5.5%  94.5% n_eff Rhat4
+a     112.97 2.00 109.83 116.19  1013  1.01
+b       0.92 0.04   0.86   0.99  1004  1.01
+sigma   5.08 0.20   4.78   5.40  1543  1.00
+```

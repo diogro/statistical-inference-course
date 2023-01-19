@@ -71,8 +71,9 @@ N = 100 # sample size
 alpha = 1 # Intercept
 beta = 1  # slope on x
  
-x = rnorm(N)                    # Simulated independent variable. Mean = 0 and sd = 1
-y = alpha + beta * x + rnorm(N) # Response variable, with residual sd = 1
+x = rnorm(N)           # Simulated independent variable. Mean = 0 and sd = 1
+mu = alpha + beta * x  # linear model for the expected value
+y = rnorm(N, mu)       # Response variable, with residual sd = 1
 
 # Rethinking code
 m1 = ulam(alist(
@@ -107,7 +108,7 @@ to the same parameter values. Ideally, all chains should jump around the same va
 getting stuck on some value and without much similarity between subsequent values. Let's plot the 4 chains:
 
 ```{r}
-trankplot(m1)
+traceplot_ulam(m1)
 ```
 
 These look fine. 

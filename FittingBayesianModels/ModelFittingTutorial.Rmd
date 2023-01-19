@@ -186,3 +186,4 @@ simualated_quantile = apply(simulated_data, 2, quantile, 0.9)
 dens(simualated_quantile, col = 2, lwd = 4) # density of simulated 90% percentiles
 abline(v = quantile(y, 0.9), lwd = 3)       # observed 90% percentile
 ```
+

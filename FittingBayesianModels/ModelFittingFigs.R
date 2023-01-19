@@ -70,3 +70,36 @@ par(mfrow = c(1, 2))
 dens(samples$a, xlim = c(105, 125), lwd = 5, col = 2, main = expression(alpha))
 dens(samples$b, xlim = c(0.7, 1.1), lwd = 5, col = 2, main = expression(beta))
 dev.off()
+
+
+
+### Typical set
+
+library(evolqg)
+N = 10000
+x = array(NA, dim = c(N, 20))
+for(d in 1:20){
+  samples = matrix(rnorm(d*N), ncol = d)
+  x[,d] = apply(samples, 1, Norm)
+}
+
+library(ggridges)
+library(gganimate)
+melt_x = reshape2::melt(x)
+ggplot(melt_x, aes(value, group = Var2, fill = as.factor(Var2))) + 
+  geom_histogram(alpha = 0.8)  + scale_fill_viridis_d() + 
+  theme_cowplot() +
+  labs(x = "Distance from distribution mean") + 
+  theme(legend.position = "none") + 
+  transition_states(Var2,
+                    transition_length = 2,
+                    state_length = 1) +  
+  theme(title = element_text(size = axis.font.size, color = "#586E75"),
+                                               axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
+                                               axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
+                                               legend.position = "none")
+
+
+
+
+

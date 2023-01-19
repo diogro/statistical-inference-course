@@ -63,6 +63,17 @@ Package       : pst-plot
 ![](../figures/typical_set.svg){ width: 500px }
 ~
 
+## Multivariate gaussians
+
+
+
+## Gaussian typical set
+
+~ Center
+![](../figures/typical_set.gif)
+~
+
+
 ## finding high probability regions
 
 ~ Center

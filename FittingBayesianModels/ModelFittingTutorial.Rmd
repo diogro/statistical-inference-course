@@ -83,7 +83,7 @@ m1 = ulam(alist(
   b ~ normal(0, 1),          # Prior on slope
   sigma ~ exponential(1)),   # Prior on residual variance
   data = list(y = y, x = x), # Data list
-  iter = 1000, chains = 4, cores = 4, refresh = 0) # Sampler control parameters
+  iter = 2000, chains = 4, cores = 4, refresh = 0) # Sampler control parameters
 precis(m1, digits = 2) # Summary of model fit
 ```
 

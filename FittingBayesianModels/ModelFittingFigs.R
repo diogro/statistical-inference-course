@@ -26,6 +26,7 @@ figure.font = "Calibri"
 
 # Data
 library(rethinking)
+data("Howell1")
 d = Howell1
 d2 <- Howell1[ d$age >= 18 , ] 
 
@@ -71,7 +72,46 @@ dens(samples$a, xlim = c(105, 125), lwd = 5, col = 2, main = expression(alpha))
 dens(samples$b, xlim = c(0.7, 1.1), lwd = 5, col = 2, main = expression(beta))
 dev.off()
 
+png(here::here("figures/height_weight_pairs.png"), 
+    height = 500, width = 700, bg = "transparent")
+pairs(fit)
+dev.off()
 
+
+m2 = ulam(alist(
+  y ~ normal(mu, sigma),
+  mu <- a + b * x,
+  a ~ normal(0, 1),
+  b ~ lognormal(0, 1),
+  sigma ~ exponential(1)), 
+  data = list(y = d2$height - mean(d2$height), 
+              x = (d2$weight - mean(d2$weight))/sd(d2$weight)),
+  iter = 1000, chains = 4, cores = 4)
+
+png(here::here("figures/height_weight_pairs_centered.png"), 
+    height = 500, width = 700, bg = "transparent")
+pairs(m2)
+dev.off()
+
+# Simulated data
+
+N = nrow(d2)
+n_samples = 30
+x = d2$weight
+simulated_data = array(NA, dim = c(N, n_samples))
+samples = data.frame(samples)
+for(k in 1:n_samples)
+  simulated_data[,k] = rnorm(N, 
+                             mean = samples[k, "a"] + samples[k, "b"] * x, 
+                             sd = samples[k, "sigma"])
+
+png(here::here("figures/height_weight_posteriors_simulation.png"), 
+    height = 500, width = 700, bg = "transparent")
+plot(d2$height~x, pch = 19, ylab="Height", xlab = "Weight")
+for(k in 1:n_samples)
+  points(simulated_data[,k]~x, col = adjustcolor(2, alpha = 0.2))
+points(d2$height~x, pch = 19)
+dev.off()
 
 ### Typical set
 
@@ -95,9 +135,11 @@ anim = ggplot(melt_x, aes(value, group = Var2, fill = as.factor(Var2))) +
                     transition_length = 2,
                     state_length = 1) +  
   theme(title = element_text(size = axis.font.size, color = "#586E75"),
-                                               axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
-                                               axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
-                                               legend.position = "none")
+        axis.title = element_text(size = axis.font.size, 
+                                  family = figure.font, color = "#586E75"),
+        axis.text = element_text(size = axis.font.size*0.8, 
+                                 family = figure.font, color = "#586E75"),
+        legend.position = "none")
 anim_save(filename = "figures/typical_set.gif", animation = anim ) 
 
 png(here::here("figures", "2d_gauss.png"), height = fig.height, width = fig.width, bg = "transparent")
@@ -108,4 +150,64 @@ ggplot(data.frame(x = x[,2]), aes(x)) + geom_histogram(bins = 100) +
         axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
         legend.position = "none")
+dev.off()
+
+## Milk model
+
+data(milk)
+m = milk[,c("kcal.per.g", "perc.fat", "perc.lactose")]
+m$K <- standardize( m$kcal.per.g )
+m$F <- standardize( m$perc.fat )
+m$L <- standardize( m$perc.lactose )
+
+m1 = ulam(alist(
+  K ~ normal(mu, sigma),
+  mu <- a + bx*x,
+  a ~ normal(0, 0.05),
+  bx ~ normal(0, 1),
+  sigma ~ normal(0, 0.5)
+), data = list(K = m$K, 
+               x = m$F),
+iter = 2000, chains = 4, cores = 4)
+
+m2 = ulam(alist(
+  K ~ normal(mu, sigma),
+  mu <- a + bz*z,
+  a ~ normal(0, 0.05),
+  bz ~ normal(0, 1),
+  sigma ~ normal(0, 0.5)
+), data = list(K = m$K, 
+               z = m$L),
+iter = 2000, chains = 4, cores = 4)
+
+m3 = ulam(alist(
+  K ~ normal(mu, sigma),
+  mu <- a + bx*x + bz*z,
+  a ~ normal(0, 0.05),
+  bx ~ normal(0, 1),
+  bz ~ normal(0, 1),
+  sigma ~ normal(0, 0.5)
+), data = list(K = m$K, 
+               x = m$F, 
+               z = m$L),
+iter = 2000, chains = 4, cores = 4)
+ms = list("m1:Fat" = extract.samples(m1)[[2]], 
+          "m2:Sugar" = extract.samples(m2)[[2]], 
+          "m3:Fat" = extract.samples(m3)[[2]], 
+          "m3:Sugar" = extract.samples(m3)[[3]])
+
+png(here::here("figures", "milk_coefs.png"), 
+    height = fig.height, width = fig.width, bg = "transparent")
+par(mar = c(3, 1, 1, 1))
+plot(precis(ms), xlab = "Effect on Caloric content", 
+     cex = 1.5, main = "Effect on Caloric content")
+dev.off()
+png(here::here("figures", "milk_coef_pairs.png"), 
+    height = fig.height, width = fig.width, bg = "transparent")
+pairs(m3)
+dev.off()
+
+png(here::here("figures", "milk_predictor_pairs.png"), 
+    height = fig.height, width = fig.width, bg = "transparent")
+pairs( ~ kcal.per.g + perc.fat + perc.lactose , data=m , col=rangi2, pch = 19 )
 dev.off()

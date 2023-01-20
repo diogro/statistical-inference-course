@@ -222,3 +222,84 @@ a     112.97 2.00 109.83 116.19  1013  1.01
 b       0.92 0.04   0.86   0.99  1004  1.01
 sigma   5.08 0.20   4.78   5.40  1543  1.00
 ```
+
+## Model checking
+
+After fitting the model, we can use the posterior to simulate synthetic data and compare to the data used to fit the model. Discrepancies can suggest paths to improve the model.
+
+~ Math
+y_{sim} \sim P(y_{sim}|y) = P(y_{sim}|\theta) P(\theta|y)
+~
+
+## Posterior simulations
+
+~Center
+![](../figures/height_weight_posteriors_simulation.png)
+~
+
+## Posterior correlations
+
+~Center
+![](../figures/height_weight_pairs.png)
+~
+
+## Reparametrization
+
+```python
+ulam(alist(
+  y ~ normal(mu, sigma),
+  mu <- a + b * x,
+  a ~ normal(0, 1),
+  b ~ lognormal(0, 1),
+  sigma ~ exponential(1)), 
+  data = list(y = d2$height - mean(d2$height), 
+              x = (d2$weight - mean(d2$weight))/sd(d2$weight)),
+  iter = 1000, chains = 4, cores = 4)
+  ```
+
+## Posterior after centering
+
+  ~Center
+![](../figures/height_weight_pairs_centered.png)
+~
+
+## Collinear predictors
+
+The posterior can be used to interpret weird results. 
+
+Returning to the primate milk example:
+
+- $K_i$: caloric content of milk in several monkey groups
+- $x_i$: milk fat content
+- $z_i$: milk sugar content
+
+~~ Math
+\begin{aligned}
+  K_i &\sim Normal(\mu_i, \sigma) \\
+  m1: \mu_i &= \alpha + \beta_x x_i \\
+  m2: \mu_i &= \alpha + \beta_z z_i\\
+  m3: \mu_i &= \alpha + \beta_x x_i + \beta_z z_i \\
+  \alpha, \beta_x, \beta_z &\sim Normal(0, 0.5) \\
+  \sigma &\sim Exponential(1)
+\end{aligned}
+~~
+
+## Shifting effects
+
+~Center
+![](../figures/milk_coefs.png)
+~
+
+Smaller effects and wider intervals
+
+## Correlated coefficients - m3 model
+
+~Center
+![](../figures/milk_coef_pairs.png)
+~
+
+## Correlated predictors
+
+~Center
+![](../figures/milk_predictor_pairs.png)
+~

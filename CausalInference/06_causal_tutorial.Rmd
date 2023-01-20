@@ -23,9 +23,11 @@ if(!require("dagitty")) install.packages("dagitty")
 library(dagitty)
 ```
 
+# Remembering multiple regression
+
 # Good controls
 
-When fitting causal models, it is often necessary to add covariates to a linear model in order to correctly identify the effect of interest. This means running a muiltiple regression in which one of the coefficients is related to the causal path of interest, and the others are added to the model in order to block non-causal paths. Many of the examples in this tutorial are from [Cinelli, Carlos, Andrew Forney, and Judea Pearl. "A crash course in good and bad controls." Sociological Methods & Research (2021): 00491241221099552.](https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf)
+When fitting causal models, it is often necessary to add covariates to a linear model in order to correctly identify the effect of interest. This means running a multiple regression in which one of the coefficients is related to the causal path of interest, and the others are added to the model in order to block non-causal paths. Many of the examples in this tutorial are from [Cinelli, Carlos, Andrew Forney, and Judea Pearl. "A crash course in good and bad controls." Sociological Methods & Research (2021): 00491241221099552.](https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf)
 
 For example, in the following DAGs, where X, Y and Z are observed, and U is unobserved:
 

@@ -25,6 +25,108 @@ library(dagitty)
 
 # Remembering multiple regression
 
+In [multiple linear regression](../03_linear_models/lab2.html), the
+expected value of the response is a **linear combination** of
+predictor variables:
+
+$$
+\begin{aligned} 
+  y_i &\sim Normal(\mu, \sigma) \\
+  \mu_i &= \sum^J \beta_j x_{ij} \\
+\end{aligned} 
+$$
+
+This model is fitted by finding the values of $\beta_j$ that provides
+the best prediction of the expected (or mean) response $\mu_i$. If the
+predictors are independent causes of the response, the estimated
+coefficients $\beta_j$ express the isolated effects of each predictor
+on the response. You can check this by creating a Gaussian variable with
+a mean value that is the sum of two independent predictors:
+
+```{r }
+set.seed(42)
+x1 <- runif(1000)
+x2 <- runif(1000)
+y <- rnorm(1000, mean = x1 + x2, sd = 0.5)
+```
+
+and then comparing the coefficients of the multiple regression with
+those of the simple regression on each single predictor:
+
+```{r }
+coef( lm(y ~ x1 + x2) )
+coef( lm(y ~ x1) )
+coef( lm(y ~ x2) )
+```
+
+What happens if the predictors are not independent? Simulate two
+predictors that share a common cause, that is an unknown variable
+$u$. The common cause creates a correlation between the two
+predictors:
+
+
+```{r }
+u <- runif(100)
+x1 <- rnorm(100, mean = u, sd =0.1)
+x2 <- rnorm(100, mean = u, sd =0.1)
+y <-  rnorm(100, mean = x1 + x2, sd =0.1)
+plot(x2 ~ x1)
+```
+
+And now the coefficients of each predictor in the multiple model are
+much smaller than their isolated effects (estimated from simple
+regressions):
+
+```{r }
+coef( lm(y ~ x1 + x2) )
+coef( lm(y ~ x1) )
+coef( lm(y ~ x2) )
+```
+
+This happens because the coefficients of a multiple regression express
+effects of predictors that are not accounted for by other predictors,
+called **partial or controlled effects**. In our example, the variation of
+each predictor not accounted by the other predictor are the residuals
+of the linear regressions of $x_1$ as a function of $x_2$ and
+vice-versa. Compare the simple regressions of $y$ to these residuasl,
+and to the original predictor variables:
+
+
+```{r }
+x1_res <- residuals( lm(x1 ~ x2) )
+x2_res <- residuals( lm(x2 ~ x1) )
+
+par(mfcol = c(2,2))
+plot(y ~ x1, main = "y ~ x1")
+abline( lm(y ~ x1) )
+plot(y ~ x1_res, main = "y ~ x1|x2", xlab = "residuals of x1 ~ x2")
+abline( lm(y ~  x1_res))
+plot(y ~ x2, main = "y ~ x2")
+abline( lm(y ~x2) )
+plot(y ~ x2_res, main = "y ~ x2|x1", xlab = "residuals of x2 ~ x1")
+abline( lm(y ~  x2_res))
+par(mfcol = c(1,1))
+```
+
+The coefficients of the multiple regression are the slopes of the
+lines in the lower row of the plots in the figure above. Such slopes
+are smaller than those of the linear regression to the raw values of
+the predictors (first row of plots above). You can check this by
+comparing the coefficients of these regressions to the multiple
+regression coefficients:
+
+```{r }
+coef( lm(y ~ x1 + x2) )
+coef( lm(y ~x1_res) )
+coef( lm(y ~x1_res) )
+```
+
+In short, coefficients of multiple regression express partial
+effects. The inference of the causal paths behind these partialled
+effects is not trivial. The good news are that we can infer some
+important aspects of the causal patterns from different linear models.
+
+
 # Good controls
 
 When fitting causal models, it is often necessary to add covariates to a linear model in order to correctly identify the effect of interest. This means running a multiple regression in which one of the coefficients is related to the causal path of interest, and the others are added to the model in order to block non-causal paths. Many of the examples in this tutorial are from [Cinelli, Carlos, Andrew Forney, and Judea Pearl. "A crash course in good and bad controls." Sociological Methods & Research (2021): 00491241221099552.](https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf)

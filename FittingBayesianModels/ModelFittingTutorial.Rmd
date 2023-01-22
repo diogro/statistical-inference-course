@@ -47,6 +47,39 @@ install_cmdstan()
 
 Now we should be good to go!
 
+# Defining a very simple posterior
+
+Consider the following model:
+
+$$
+\begin{aligned}
+y_i &\sim Normal(\mu, \sigma) \\
+\mu &\sim Normal(0, 1) \\
+\sigma &\sim Exponential(1)
+\end{aligned}
+$$
+
+Can we write this posterior in R? Sure!
+
+```{r}
+set.seed(2)
+# Data:
+y = rnorm(100, mean = 2, sd = 1)
+
+# Posterior, in log scale for numerical stability
+logP_theta_y = function(mu, sigma = 1, data = y){
+  ll = sum(dnorm(data, mu, sigma, log = TRUE))
+  logprior = dnorm(mu, 0, 1, log = TRUE) + dexp(sigma, 1, log = TRUE)
+  logprior + ll # P(theta)P(y|theta)
+}
+x = seq(0, 4, 0.01)
+px = Vectorize(logP_theta_y)(x)
+plot(px ~ x, pch = 19, col = 2, xlab= "mean parameter (mu)", ylab = "proportional to P(mu|y)")
+abline(v = 2)
+```
+
+In this univariate case it's easy to check many possible values of $\mu$ to find the high probability values, but in high dimensions this is not feasible.
+
 # Defining a model in the rethinking package
 
 The rethinking syntax closely mirrors the mathematical notation we have been using in class.

@@ -1,8 +1,8 @@
 [INCLUDE=present.mdk]
-Title         : Multivel and hierarchical models
+Title         : Multilevel and hierarchical models
 Sub Title     : Shrinkage, partial pooling, and mixed linear models
 Author        : Diogo Melo
-Affiliation   : Lewis-Sigler Institute of Intergrative Genomics
+Affiliation   : Lewis-Sigler Institute of Integrative Genomics
 Email         : damelo@princeton.edu
 Reveal Theme  : solarized
 Beamer Theme  : singapore
@@ -14,3 +14,22 @@ Package       : pst-plot
 
 [TITLE]
 
+## Baseball example 
+
+## Batting averages
+
+~ Center
+![](../figures/baseball_estimates.png)
+~ 
+
+## Shrinkage and partial pooling 
+
+## Clustered data
+
+## Replicated data
+
+## Hyper parameters
+
+## Correlated residuals
+
+## Phylogenetic models and Gaussian processes

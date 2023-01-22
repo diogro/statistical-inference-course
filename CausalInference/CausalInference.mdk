@@ -17,11 +17,13 @@ Bibliography  : ../shared/references.bib
 
 # what are models for?
 
-## prediction vs inference
-
-- small world - large world applications
+## prediction vs causal inference
 
 ## Causation and correlation
+
+~ Center
+Why does correlation not imply causation?
+~
 
 ## graph model representation
 
@@ -32,6 +34,14 @@ We can use graphs to represent our putative causal model. An arrow between varia
 ~
 
 [xy]: ../figures/DAGS/x-y.svg "x-y" { width: 300px }
+
+# Causal inference intro
+
+~Center
+![](../figures/primer.jpeg){height: 500px}
+~
+
+# Pipes, forks, colliders
 
 ## elemental triads
 
@@ -52,10 +62,6 @@ The colider
 [pipe]: ../figures/DAGS/pipe.svg "Pipe" { width: 300px }
 [fork]: ../figures/DAGS/fork.svg "Fork" { width: 300px }
 [colider]: ../figures/DAGS/colider.svg "Colider" { width: 300px }
-
-## representing causal models
-
-
 
 ## simulating confounds
 
@@ -174,7 +180,8 @@ sigma  1.09 0.08 0.97  1.22  1200     1
 
 ## Examples of forks or confounders 
 
-This is the quintessential "control" variable. Most variables are included in the model under the assumption that they are confounders and need to be controlled for to give correct estimates.
+- This is the quintessential "control" variable. 
+- Most variables are included in the model under the assumption that they are confounders and need have their effects taken into consideration.
 
 ~ Center
 ![xy_fork]
@@ -188,6 +195,15 @@ Famously, R. A. Fisher was not convinced that smoking caused cancer, and propose
 ![](../figures/smoking_cancer.png){ width: 400px }
 ~
 
+
+## omitted variable bias
+
+~ Center
+![](../figures/omitted.png){ width: 500px }
+~
+
+- Carlos Cinelli and Chad Hazlett (2020) [@Cinelli2020-go]
+
 ## Species distributions
 
 Maybe want to evaluate the effect of some predator on the distribution of a prey. But the spacial distribution of both the predator and the prey are affected by some abiotic factor:
@@ -195,6 +211,8 @@ Maybe want to evaluate the effect of some predator on the distribution of a prey
 ~ Center
 ![](../figures/species_predator.png){ width: 400px }
 ~
+
+
 
 # Pipe
 
@@ -301,9 +319,7 @@ If we are evaluating the effectiveness of a fungal treatment, most of the effect
 ![](../figures/post_treatment_paper.png){height: 400px}
 ~
 
-- Montgomery, J.M., Nyhan, B. and Torres, M. (2018)
-- American Journal of Political Science, 62: 760-775. 
-- https://doi.org/10.1111/ajps.12357
+Montgomery et al. 2018[@Montgomery2018-mi]
 
 # Collider
 
@@ -399,11 +415,35 @@ If we represent our putative causal relations using DAGs, we have a set of rules
 
 - Automated tool: [dagitty.net](http://www.dagitty.net/dags.html)
 
+## Open and closed paths
+
+- Paths containing uncontrolled pipes and forks are open
+- Paths containing colliders are closed by default, but open if we condition on the collider
+
+## Identify all the open paths from X to Y
+
+
+~Center
+![](../figures/DAGS/paths_dag.png){height: 400px}
+~ 
+
 ## Back door criterion
 
-## Table two fallacy
+To estimate the causal effect of X on Y, identify a set of control variables such that no descendants of X are in the control set, and all paths between X and Y that contain an arrow into X are blocked.
 
-Not all parameter estimates are causal estimates!
+## Not all estimates are causal 
+
+~Center
+![](../figures/table_2.png){height: 500px}
+~ 
+
+- Westreich et al. [@Westreich2013-fk]
+
+## Hiv and stroke 
+
+~Center
+![](../figures/DAGS/hiv_stroke.svg){height: 250px}
+~ 
 
 ## good controls
 
@@ -415,6 +455,10 @@ Not all parameter estimates are causal estimates!
 ## bad controls
 
 - {.fragment} Block causal paths (blocking pipes)
-- {.fragment} Open non-causal paths (opening pipes colliders)
+- {.fragment} Open non-causal paths (opening colliders)
 - {.fragment} Reduce precision
 - {.fragment} Prevent causal inference
+
+## references
+
+[BIB]

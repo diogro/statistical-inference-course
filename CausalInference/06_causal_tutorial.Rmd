@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # dagitty package
 
-Much of the causal implications contained in DAGs can be analised automatically. 
+Much of the causal implications contained in DAGs can be analysed automatically. 
 The dagitty package provides functions for this.
 
 ```{r}
@@ -98,6 +98,22 @@ __Question__: What if Z is a cause of X, not of Y. Would adding it to the regres
 
 # Bad controls
 
+Two classes of bad controls are the posttreatment or overcontrol bias, and bias amplification. 
+
+In the following DAGs, controlling on Z would lead to a understimate of the effect of X on Y.
+
+```{r, out.height=150, out.width=550, echo=FALSE}
+knitr::include_graphics("../figures/DAGS/overcontrol.png")
+```
+
+In the following case, controlling on Z would lead to an increase in the bias caused by the unobserved variable U.
+
+```{r, out.height=150, out.width=210, echo=FALSE}
+knitr::include_graphics("../figures/DAGS/bias_amplification.png")
+```
+
+__Exercise__: Simulate the bias amplification example and check the effect of including the Z variable in the model.
+
 ## AIC and significance won't help you
 
 To explore the effect of a bad control variable, let's simulate a collider:
@@ -122,18 +138,44 @@ summary(m2)
 
 Not including Z gives the correct estimate of no effect of X on Y, but the model including Z tells us that both X and Z have significant effects on Y. Why is this?
 
-How about AIC?
+Many researchers would interpret the significant results in model 2 as evidence that both X and Z affect Y, don't make this mistake! Statistical models are blind to causes, they only capture associations.
+
+How about AIC? Would model comparison identify the correct model?
 
 ```{r}
-AIC(m1, m2)
+library(bbmle)
+AICctab(m1, m2, mnames = c("Correct", "Biased"),
+        base=TRUE, weights = TRUE, nobs = N)
 ```
 
+The biased model is also selected by the AIC. This is not surprising, as the inclusion of the collider increases the available information about Y, and so makes better predictions.
+
+__The only way to identify the possible bias is having a clear scientific model.__
 
 # Practice DAGs
 
 For each of the following DAGs form the rethinking book, write down the correct models for estimating the total causal influence of X on Y:
 
-```{r, out.height=100, out.width=400, out.height=285, echo=FALSE}
+```{r, out.height=285, out.width=400, echo=FALSE}
 knitr::include_graphics("../figures/dags_6M3.png")
+```
+
+You can check your answers using the dagitty package or the [online interface](http://www.dagitty.net/dags.html). Here is an example:
+
+```{r}
+library(dagitty)
+dag1 = dagitty('dag { X -> Y Z -> X Z -> Y A -> Z A -> Y}')
+
+# Plotting the dag, we can use coordinates to place the nodes in the desired position
+coordinates( dag1 ) <-
+    list( x=c(X = 0, Y = 2, Z = 1, A = 2),
+          y=c(X = 0, Y = 0, Z = -1, A = -1) )
+plot(dag1)
+
+# get all paths
+paths(dag1, from = "X", to = "Y")
+
+# get the correct adjustment set
+adjustmentSets(dag1, exposure = "X", outcome = "Y")
 ```
 

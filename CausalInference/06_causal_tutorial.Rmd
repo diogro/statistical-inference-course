@@ -84,12 +84,16 @@ coef( lm(y ~ x2) )
 ```
 
 This happens because the coefficients of a multiple regression express
-effects of predictors that are not accounted for by other predictors,
-called **partial or controlled effects**. In our example, the variation of
-each predictor not accounted by the other predictor are the residuals
-of the linear regressions of $x_1$ as a function of $x_2$ and
-vice-versa. Compare the simple regressions of $y$ to these residuasl,
-and to the original predictor variables:
+**partial or controlled effects**, that is, the direct effects of each
+predictor when all the other predictors are held constant.  that are
+not accounted for by other predictors. Thus, the coefficients of a
+multiple regression for a predictor $x_1$ corresponds to the
+coefficient of a simple regression of the response as a function of
+the **residuals** of $x_1$ in respect to all other predictors $x_i$.
+
+Caculate the residuals of the predictors $x_1$ and $x_2$
+to each other and plot $y$ as a
+function of each of these residual variables:
 
 
 ```{r }
@@ -108,12 +112,12 @@ abline( lm(y ~  x2_res))
 par(mfcol = c(1,1))
 ```
 
-The coefficients of the multiple regression are the slopes of the
-lines in the lower row of the plots in the figure above. Such slopes
-are smaller than those of the linear regression to the raw values of
-the predictors (first row of plots above). You can check this by
-comparing the coefficients of these regressions to the multiple
-regression coefficients:
+The coefficients of $x_1$ and $x_2$ in the multiple regression are the
+slopes of the lines in the lower row of the plots in the figure
+above. These slopes are smaller than those of the linear regression to
+the raw values of the predictors (first row of plots above). You can
+check this by comparing the coefficients of these regressions to the
+multiple regression coefficients:
 
 ```{r }
 coef( lm(y ~ x1 + x2) )
@@ -121,10 +125,13 @@ coef( lm(y ~x1_res) )
 coef( lm(y ~x1_res) )
 ```
 
-In short, coefficients of multiple regression express partial
-effects. The inference of the causal paths behind these partialled
-effects is not trivial. The good news are that we can infer some
-important aspects of the causal patterns from different linear models.
+In short, coefficients of multiple regression express direct effects,
+controlled for all other predictors. The inference of the causal paths
+behind these partialled effects is not trivial, because such effects
+can have different meanings. Independent variables in a multiple
+regression can play different roles, such as conforunders, mediators
+or proxies.  If you understand that, you can infer some important
+aspects of the causal patterns from different linear models.
 
 
 # Good controls
@@ -262,7 +269,7 @@ For each of the following DAGs form the rethinking book, write down the correct 
 knitr::include_graphics("../figures/dags_6M3.png")
 ```
 
-You can check your answers using the dagitty package or the [online interface](http://www.dagitty.net/dags.html). Here is an example:
+You can check your answers using the dagitty package or the [online interface](http://www.dagitty.net/dags.html)^[For begginers, we reccomend to start playing with this interface, and then check the results with the `dagitty` package]. Here is an example:
 
 ```{r}
 library(dagitty)

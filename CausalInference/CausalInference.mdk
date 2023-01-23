@@ -54,7 +54,7 @@ The fork
 
 ![fork]{ height: 30px } 
 
-The colider 
+The collider 
 
 ![colider]{ height: 30px } 
 ~
@@ -353,7 +353,7 @@ set.seed(1)
 N = 100
 x = rnorm(N)            # x ~ normal(0, 1)
 y = rnorm(N)            # y ~ normal(0, 1)
-z = rnorm(N, 1 + x + y) # z ~ normal(1 + x + y, 1) -> colider
+z = rnorm(N, 1 + x + y) # z ~ normal(1 + x + y, 1) -> collider
 
 m1 = ulam(alist(
     y ~ normal(a + bx*x, sigma),
@@ -363,7 +363,7 @@ m1 = ulam(alist(
 ), data = list(y = y, x = x), iter = 1000, chains = 4, cores = 4)
 ```
 
-## $P(\beta_{yx}|x, y)$ without the colider
+## $P(\beta_{yx}|x, y)$ without the collider
 <!-- $  -->
 
 ``` python
@@ -387,7 +387,7 @@ m2 = ulam(alist(
     y ~ normal(a + bx*x + bz*z, sigma),
     a ~ normal(0, 0.3),
     bx ~ normal(0, 0.3),
-    bz ~ normal(0, 0.3), # Colider
+    bz ~ normal(0, 0.3), # Collider
     sigma ~ exponential(1)
 ), data = list(y = y, x = x, z = z), iter = 1000, chains = 4, cores = 4)
 ```
@@ -438,6 +438,19 @@ To estimate the causal effect of X on Y, identify a set of control variables suc
 ~ 
 
 - Westreich et al. [@Westreich2013-fk]
+
+# Table 1
+
+~ Center
+![](../figures/table_1ex.png){height: 500px}
+~ 
+
+# Table 2
+
+~ Center
+![](../figures/table_2ex.png){height: 500px}
+~ 
+
 
 ## Hiv and stroke 
 

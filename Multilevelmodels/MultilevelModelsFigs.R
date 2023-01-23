@@ -42,9 +42,9 @@ MLE = d[,2]/d[,1]
 m1 = ulam(alist(
   hits ~ binomial(at_bats, theta),
   theta <- p[player],
-  p[player] ~ beta(b0, b1),
-  b0 ~ lognormal(0, 1),
-  b1 ~ lognormal(0, 1)
+  p[player] ~ beta(nu0, nu1),
+  nu0 ~ lognormal(0, 1),
+  nu1 ~ lognormal(0, 1)
 ), data = list(hits = d[,2], 
                at_bats = d[,1], 
                player = 1:N_players), 

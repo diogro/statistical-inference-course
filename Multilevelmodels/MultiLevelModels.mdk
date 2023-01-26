@@ -74,27 +74,13 @@ chains = 4, cores = 4, iter = 2000)
 
 - Extreme estimates are "shrunk" towards the mean
 
-## Shrinkage and partial pooling 
+## Shrinkage and types of pooling 
 
-## Random intercepts model
+(1) __Complete pooling__ - Only one estimate for all players (underfitting)
 
-Likelihood:
+(2) __No pooling__ - Players are all independent, no information is shared (overfitting)
 
-~ Math
-\begin{aligned}
-y_i &\sim Normal(\mu_i, sigma) \\ 
-\mu_i &= \alpha_0 + \alpha_{group[i]} \\ 
-\alpha_k &\sim Normal(0, \sigma_{group}) \\ 
-\end{aligned}
-~
-
-Priors:
-~ Math
-\begin{aligned}
-\alpha_0 &\sim Normal(0, 1) \\
-\sigma, \sigma_{group} &\sim Half\text{-}Normal(0, 1) \\
-\end{aligned}
-~ 
+(3) __Partial pooling__ - Players' estimates help inform each other. This means using an adaptive regularizing prior, as in the previous example.
 
 ## Blocked experimental designs
 
@@ -102,18 +88,192 @@ Priors:
 \begin{aligned}
 y_i &\sim Normal(\mu_i, sigma) \\ 
 \mu_i &= \alpha_0 + \alpha_{block[i]} + \beta x_i \\ 
-\alpha_k &\sim Normal(0, \sigma_{block}) \\ 
+\alpha_k &\sim Normal(0, \sigma_{\alpha}), \text{for $k$ in } \{1,\cdots ,N_{blocks}\} \\ 
 \alpha_0 &\sim Normal(0, 1) \\
 \beta &\sim Normal(0, 0.3) \\
-\sigma, \sigma_{block} &\sim Half\text{-}Normal(0, 1) \\
+\sigma, \sigma_{block} &\sim Exponential(1) \\
 \end{aligned}
 ~ 
 
-## The 8 Schools Problem
+## Prosociality in chimps
+
+- Prosociality refers to behaviors that are intended to benefit others. 
+
+- We can test for the presence of prosociality experimentally 
+
+- The set up allows for a subject to decide to give food to a partner or not, with no cost to himself. 
+
+## Experimental setup 
 
 ~ Center
-![](../figures/8schools_paper.png){height: 600px}
+![](../figures/chimp_experiment.png){height: 500px}
+~ 
+
+## data structure
+
+- Several measures per individual chimp (actor)
+- Condition (social or non-social)
+- Experimental blocks 
+- Prosocial option on the left (chimps are left- or right-handed)
+
+Outcomes: 
+
+- Chose prosocial option 
+- Pulled left
+
+
+## chimp data
+
+```python
+> library(rethinking)
+> data(chimpanzees)
+> head(chimpanzees)
+  actor recipient condition block trial prosoc_left chose_prosoc pulled_left
+1     1        NA         0     1     2           0            1           0
+2     1        NA         0     1     4           0            0           1
+3     1        NA         0     1     6           1            0           0
+4     1        NA         0     1     8           0            1           0
+5     1        NA         0     1    10           1            1           1
+6     1        NA         0     1    12           1            1           1
+```
+
+## experimental treatments
+
+~ { font-size:28px}
+(1) prosoc_left= 0 and condition= 0: Two food items on right and no partner. 
+
+(2) prosoc_left= 1 and condition= 0: Two food items on left and no partner.
+
+(3) prosoc_left= 0 and condition= 1: Two food items on right and partner present. 
+
+(4) prosoc_left= 1 and condition= 1: Two food items on left and partner present.
 ~
+
+## Initial model Likelihood
+
+- $L_i$: pulled left 
+
+~ Math
+\begin{aligned}
+L_i & \sim Bernoulli(p_i) \\ 
+logit(p_i) &= \alpha_{actor[i]} + \beta_{treatment[i]} \\
+\end{aligned}
+~ 
+
+## model with block effects
+
+- $L_i$: pulled left 
+
+~ Math
+\begin{aligned}
+L_i & \sim Bernoulli(p_i) \\ 
+logit(p_i) &= \alpha_{actor[i]} + \gamma_{block[i]} + \beta_{treatment[i]} \\
+\end{aligned}
+~ 
+
+## Prior for the experimental treatment 
+
+~ Math
+\begin{aligned}
+L_i & \sim Bernoulli(p_i) \\ 
+logit(p_i) &= \alpha_{actor[i]} + \gamma_{block[i]} + \beta_{treatment[i]} \\
+\beta_j &\sim Normal(0, 0.5)\text{, for } j = 1..4 \\
+\end{aligned}
+~
+
+## Pooling the estimates for actor
+
+~ Math
+\begin{aligned}
+L_i & \sim Bernoulli(p_i) \\ 
+logit(p_i) &= \alpha_{actor[i]} + \gamma_{block[i]} + \beta_{treatment[i]} \\
+\beta_j &\sim Normal(0, 0.5)\text{, for } j = 1..4 \\
+\alpha_j &\sim Normal(\alpha_0, \sigma_{\alpha})\text{, for } j = 1..7 \\
+\end{aligned}
+~
+
+## Pooling the estimates for block
+
+~ Math
+\begin{aligned}
+L_i & \sim Bernoulli(p_i) \\ 
+logit(p_i) &=  \alpha_{actor[i]} + \gamma_{block[i]} + \beta_{treatment[i]} \\
+\beta_j &\sim Normal(0, 0.5)\text{, for } j = 1..4 \\
+\alpha_j &\sim Normal(\alpha_0, \sigma_{\alpha})\text{, for } j = 1..7 \\
+\gamma_j &\sim Normal(0, \sigma_{\gamma})\text{, for } j = 1..6 \\
+\end{aligned}
+~
+
+## All the missing priors
+
+~ Math
+\begin{aligned}
+L_i & \sim Bernoulli(p_i) \\ 
+logit(p_i) &= \alpha_0 + \alpha_{actor[i]} + \gamma_{block[i]} + \beta_{treatment[i]} \\
+\beta_j &\sim Normal(0, 0.5)\text{, for } j = 1..4 \\
+\alpha_j &\sim Normal(\alpha_0, \sigma_{\alpha})\text{, for } j = 1..7 \\
+\gamma_j &\sim Normal(0, \sigma_{\gamma})\text{, for } j = 1..6 \\
+\alpha_0 &\sim Normal(0, 1.5) \\
+\sigma_{\alpha} &\sim Exponential(1) \\
+\sigma_{\gamma} &\sim Exponential(1) \\
+\end{aligned}
+~
+
+## chimp Model code
+
+```python
+## Data
+dat_list <- list(
+  pulled_left = d$pulled_left,
+  actor = d$actor,
+  block_id = d$block,
+  treatment = as.integer(d$treatment) )
+
+## Model
+m1 <- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) <- a[actor] + g[block_id] + b[treatment] ,
+        b[treatment] ~ dnorm( 0 , 0.5 ),
+      ## regularizing multi level priors
+        a[actor] ~ dnorm( a_0 , sigma_a ),
+        g[block_id] ~ dnorm( 0 , sigma_g ),
+      ## hyper-priors
+        a_0 ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_g ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+```
+
+## Actor estimates
+
+~ Center
+![](../figures/actors_sigma_a.png)
+~ 
+
+## Block estimates
+
+~ Center
+![](../figures/blocks_sigma_g.png)
+~ 
+
+## Random effects standard deviations
+
+~ Center
+![](../figures/sigma_ag.png)
+~ 
+
+## treatment effects
+
+~ Center
+![](../figures/chimp_treatments.png)
+~ 
+
+## treatment contrasts
+
+~ Center
+![](../figures/chimp_contrasts.png)
+~ 
 
 ## Random slopes model
 

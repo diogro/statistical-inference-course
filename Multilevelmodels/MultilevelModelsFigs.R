@@ -251,36 +251,22 @@ mtext( "observed proportions\n" )
 
 
 
-U_funnel <- function( q , s=3 ) {
-  v <- q[2]
-  x <- q[1]
-  U <- sum( dnorm(x,0,exp(v),log=TRUE) ) + dnorm(v,0,s,log=TRUE)
-  return( -U )
-}
-U_funnel_gradient <- function( q , s=3 ) {
-  v <- q[2]
-  x <- q[1]
-  Gv <- (-v)/s^2 - length(x) + exp(-2*v)*sum( x^2 ) #dU/dv
-  Gx <- -exp(-2*v)*x #dU/dx
-  return( c( -Gx , -Gv ) ) # negative bc energy is neg-log-prob
-}
-HMC_2D_sample( n=3 , U=U_funnel , U_gradient=U_funnel_gradient , 
-               step=0.2 , L=10 , ylab="v"  , adj_lvls=1/12 )
+library(rstan)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(growthcurver) #contains the growthdata dataset
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
 
-# Same, but with non-centered parameterization
+long_growthdata <- growthdata %>% gather(well,absorbance,-time)
+glimpse(long_growthdata)
 
-U_funnel_NC <- function( q , s=3 ) {
-  v <- q[2]
-  z <- q[1]
-  U <- sum( dnorm(z,0,1,log=TRUE) ) + dnorm(v,0,s,log=TRUE)
-  return( -U )
-}
-U_funnel_NC_gradient <- function( q , s=3 ) {
-  v <- q[2]
-  z <- q[1]
-  Gv <- (-v)/s^2 #dU/dv
-  Gz <- (-z) #dU/dz
-  return( c( -Gz , -Gv ) ) # negative bc energy is neg-log-prob
-}
-HMC_2D_sample( n=4 , U=U_funnel_NC , U_gradient=U_funnel_NC_gradient , 
-               step=0.2 , L=15 , ylab="v" , xlab="z" , xlim=c(-2,2) , nlvls=12 , adj_lvls=1 )
+ggplot(long_growthdata,aes(time,absorbance,group=well)) +
+  geom_line() + 
+  theme_minimal() + theme(axis.title = element_text(size = axis.font.size, 
+                                               family = figure.font, 
+                                               color = "#586E75"), 
+                     axis.text = element_text(size = axis.font.size*0.8, 
+                                              family = figure.font, 
+                                              color = "#586E75"))

@@ -1,0 +1,137 @@
+[INCLUDE=present.mdk]
+Title         : Dynamical models
+Sub Title     : Including more science in our models
+Author        : Diogo Melo
+Affiliation   : Lewis-Sigler Institute of Integrative Genomics
+Email         : damelo@princeton.edu
+Reveal Theme  : solarized
+Beamer Theme  : singapore
+Package       : pstricks
+Package       : pst-plot
+@html .math-inline, .math-display: color=#586e75
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_SVG-full" type="text/javascript"></script>
+
+[TITLE]
+
+# Using domain expertise to define models
+
+## Golf example
+
+~ Center
+![](../figures/golf_data.png)
+~ 
+
+## Golf logistic regression
+
+~ Math
+\begin{aligned}
+y_i & \sim Binomial(n_i, p_i) \\
+logit(p_i) &= \alpha + \beta x_i \\
+\end{aligned}
+~
+
+## Fitted logistic
+
+~ Center
+![](../figures/golf_logistic.png)
+~ 
+
+## More physical model
+
+~ Center
+![](../figures/golf_physical.png)
+~ 
+
+## P(ball falls in hole)
+
+~ Math
+P(|\text{angle}| < sin^{-1}(R-r/x)) = 2\phi \left ( \frac{sin^{-1}(R-r/x)}{\sigma} \right ) - 1
+~ 
+
+## More physical model II
+
+~ Math
+\begin{aligned}
+y_i & \sim Binomial(n_i, p_i) \\
+p_i &=  2\phi \left ( \frac{sin^{-1}(R-r/x_i)}{\sigma} \right ) - 1\\
+\end{aligned}
+~
+
+## physical model in stan 
+
+```
+data {
+  int J;
+  int n[J];
+  vector[J] x;
+  int y[J];
+  real r;
+  real R;
+}
+transformed data {
+  vector[J] threshold_angle = asin((R-r) ./ x);
+}
+parameters {
+  real<lower=0> sigma;
+}
+model {
+  vector[J] p = 2*Phi(threshold_angle / sigma) - 1;
+  y ~ binomial(n, p);
+}
+```
+
+## physical model fit 
+
+~ Center
+![](../figures/golf_model_fit.png){height: 500px}
+~ 
+
+- More: [https://mc-stan.org/users/documentation/case-studies/golf.html](https://mc-stan.org/users/documentation/case-studies/golf.html)
+
+# Differential equations 
+
+## Bacterial growth data
+
+~ Center
+![](../figures/growth_data.png)
+~
+
+## Stan differences function
+
+```
+functions {
+  real[] logisticgrowth(real t,
+                  real[] y,
+                  real[] theta,
+                  real[] x_r,
+                  int[] x_i
+                  ) {
+    real dydt[x_i[1]];
+    for (i in 1:x_i[1]){
+      dydt[i] = theta[1] * y[i] * (1-y[i]/theta[2]);
+    }
+    return dydt;
+  }
+}
+```
+## Model with ODE 
+
+```
+model {
+  real y_hat[T,n_wells];
+
+  y_hat = integrate_ode_rk45(logisticgrowth, y0, t0, ts, theta, x_r, x_i);
+  for (t in 1:T) {
+    for (i in 1:n_wells) {
+      z[t,i] ~ normal(y_hat[t,i], sigma);
+    }
+  }
+  theta ~ cauchy(0,2.5);
+  sigma ~ normal(0,0.01);
+}
+```
+
+- More: [https://shug3502.github.io/blog/DifferentialEqnsStan](https://shug3502.github.io/blog/DifferentialEqnsStan)
+
+## Pacific tools dataset

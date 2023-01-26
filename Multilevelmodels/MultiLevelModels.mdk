@@ -275,10 +275,64 @@ m1 <- ulam(
 ![](../figures/chimp_contrasts.png)
 ~ 
 
+## Centered pooled effect
+
+~ Math
+\begin{aligned}
+logit(p_i) &= \alpha_{actor[i]}  \\
+\alpha_j &\sim Normal(\alpha_0, \sigma_{\alpha})\text{, for } j = 1..7 \\
+\alpha_0 &\sim Normal(0, 1.5) \\
+\sigma_{\alpha} &\sim Exponential(1) \\
+\end{aligned}
+~
+
+## non-Centered pooled effect
+
+~ Math
+\begin{aligned}
+logit(p_i) &= \alpha_0 + \tilde \alpha_{actor[i]} * \sigma_{\alpha} \\
+\tilde \alpha_j &\sim Normal(0, 1)\text{, for } j = 1..7 \\
+\alpha_0 &\sim Normal(0, 1.5) \\
+\sigma_{\alpha} &\sim Exponential(1) \\
+\end{aligned}
+~
+
+## Non-Centered chimp model
+
+```python
+m1nc <- ulam(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a_0 + z[actor]*sigma_a + 
+                x[block_id]*sigma_g +
+                b[treatment] ,
+    b[treatment] ~ dnorm( 0 , 0.5 ),
+    z[actor] ~ dnorm( 0 , 1 ),
+    x[block_id] ~ dnorm( 0 , 1 ),
+    a_0 ~ dnorm( 0 , 1.5 ),
+    sigma_a ~ dexp(1),
+    sigma_g ~ dexp(1),
+    gq> vector[actor]:a <<- a_0 + z*sigma_a, # actor intercepts
+    gq> vector[block_id]:g <<- x*sigma_g     # block intercepts
+  ) , data=dat_list , chains=4 , cores=4 )
+ ```
+
 ## Random slopes model
+
+~ Math
+\begin{aligned}
+y_i &\sim Normal(\mu_i, sigma) \\ 
+\mu_i &= \alpha_0 + \alpha_{block[i]} + (\beta_0 + \beta_{block[i]}) x_i \\ 
+\alpha_k &\sim Normal(0, \sigma_{\alpha}), \text{for $k$ in } \{1,\cdots ,N_{blocks}\} \\
+\beta_k &\sim Normal(0, \sigma_{\beta}), \text{for $k$ in } \{1,\cdots ,N_{blocks}\} \\ 
+\alpha_0, \beta_0 &\sim Normal(0, 1) \\
+\beta &\sim Normal(0, 0.3) \\
+\sigma, \sigma_{block} &\sim Exponential(1) \\
+\end{aligned}
+~ 
 
 ## Replicated data
 
-## Correlated residuals
+## Correlated random effects
 
 ## Phylogenetic models and Gaussian processes

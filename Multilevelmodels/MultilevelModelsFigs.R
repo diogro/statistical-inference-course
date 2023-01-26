@@ -99,10 +99,9 @@ m13.4nc <- ulam(
 precis(m13.4nc, depth = 2)
 samples = as.data.frame(extract.samples(m13.4nc))
 
-library(patchwork)
 
 png("figures/actors_sigma_a.png", height = 500, width = 1000, bg = "transparent")
-mcmc_intervals(samples, regex_pars = "^a\\..", transformations = inv_logit) + 
+plot_grid(mcmc_intervals(samples, regex_pars = "^a\\..", transformations = inv_logit) + 
   geom_vline(data = NULL, xintercept = 0.5) + scale_x_continuous(limits = c(0, 1)) + 
   labs(x = "Actor effect\n(Left handedness)", y = "Actors") +  
   scale_y_discrete(labels = 1:7) + 
@@ -111,7 +110,7 @@ mcmc_intervals(samples, regex_pars = "^a\\..", transformations = inv_logit) +
                                   color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8, 
                                  family = figure.font, 
-                                 color = "#586E75")) +
+                                 color = "#586E75")) ,
 ggplot(samples) + 
   geom_density(aes(x= sigma_a), color = 2, linewidth = 2) + 
   theme_minimal() +
@@ -124,11 +123,11 @@ ggplot(samples) +
                                   color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8, 
                                  family = figure.font, 
-                                 color = "#586E75"))
+                                 color = "#586E75")))
 dev.off()
 
 png("figures/blocks_sigma_g.png", height = 500, width = 1000, bg = "transparent")
-mcmc_intervals(samples, regex_pars = "^g\\..", transformations = inv_logit) + 
+plot_grid(mcmc_intervals(samples, regex_pars = "^g\\..", transformations = inv_logit) + 
   geom_vline(data = NULL, xintercept = 0.5) + scale_x_continuous(limits = c(0, 1)) + 
   labs(x = "Block effect", y = "blocks") +  
   scale_y_discrete(labels = 1:7) + 
@@ -137,7 +136,7 @@ mcmc_intervals(samples, regex_pars = "^g\\..", transformations = inv_logit) +
                                   color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8, 
                                  family = figure.font, 
-                                 color = "#586E75")) +
+                                 color = "#586E75")) ,
   ggplot(samples) + 
   geom_density(aes(x= sigma_g), color = 1, linewidth = 2) + 
   theme_minimal() +
@@ -150,7 +149,7 @@ mcmc_intervals(samples, regex_pars = "^g\\..", transformations = inv_logit) +
                                     color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8, 
                                  family = figure.font, 
-                                 color = "#586E75"))
+                                 color = "#586E75")))
 dev.off()
 
 png("figures/sigma_ag.png", height = 500, width = 700, bg = "transparent")
@@ -250,3 +249,38 @@ text( 3 , pl[1,3]-yoff , "R/P" , pos=1 , cex=0.8 )
 text( 4 , pl[1,4]+yoff , "L/P" , pos=3 , cex=0.8 )
 mtext( "observed proportions\n" )
 
+
+
+U_funnel <- function( q , s=3 ) {
+  v <- q[2]
+  x <- q[1]
+  U <- sum( dnorm(x,0,exp(v),log=TRUE) ) + dnorm(v,0,s,log=TRUE)
+  return( -U )
+}
+U_funnel_gradient <- function( q , s=3 ) {
+  v <- q[2]
+  x <- q[1]
+  Gv <- (-v)/s^2 - length(x) + exp(-2*v)*sum( x^2 ) #dU/dv
+  Gx <- -exp(-2*v)*x #dU/dx
+  return( c( -Gx , -Gv ) ) # negative bc energy is neg-log-prob
+}
+HMC_2D_sample( n=3 , U=U_funnel , U_gradient=U_funnel_gradient , 
+               step=0.2 , L=10 , ylab="v"  , adj_lvls=1/12 )
+
+# Same, but with non-centered parameterization
+
+U_funnel_NC <- function( q , s=3 ) {
+  v <- q[2]
+  z <- q[1]
+  U <- sum( dnorm(z,0,1,log=TRUE) ) + dnorm(v,0,s,log=TRUE)
+  return( -U )
+}
+U_funnel_NC_gradient <- function( q , s=3 ) {
+  v <- q[2]
+  z <- q[1]
+  Gv <- (-v)/s^2 #dU/dv
+  Gz <- (-z) #dU/dz
+  return( c( -Gz , -Gv ) ) # negative bc energy is neg-log-prob
+}
+HMC_2D_sample( n=4 , U=U_funnel_NC , U_gradient=U_funnel_NC_gradient , 
+               step=0.2 , L=15 , ylab="v" , xlab="z" , xlim=c(-2,2) , nlvls=12 , adj_lvls=1 )

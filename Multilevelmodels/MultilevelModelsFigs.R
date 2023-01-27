@@ -262,6 +262,7 @@ options(mc.cores = parallel::detectCores())
 long_growthdata <- growthdata %>% gather(well,absorbance,-time)
 glimpse(long_growthdata)
 
+png("figures/growth_data.png", height = 500, width = 700, bg = "transparent")
 ggplot(long_growthdata,aes(time,absorbance,group=well)) +
   geom_line() + 
   theme_minimal() + theme(axis.title = element_text(size = axis.font.size, 
@@ -270,3 +271,4 @@ ggplot(long_growthdata,aes(time,absorbance,group=well)) +
                      axis.text = element_text(size = axis.font.size*0.8, 
                                               family = figure.font, 
                                               color = "#586E75"))
+dev.off()

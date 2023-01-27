@@ -39,7 +39,7 @@ ML estimates:
 ## Hyper parameters
 
 - We want to introduce some dependency between the different player's avgs. 
-- This allows the information joint distribution of all players to inform the individual estimates.
+- This allows the information in the joint distribution of all players to inform individual estimates.
 - $y_i$: number of hits
 - $n_i$: number of attempts
 
@@ -86,7 +86,7 @@ chains = 4, cores = 4, iter = 2000)
 
 ~ Math
 \begin{aligned}
-y_i &\sim Normal(\mu_i, sigma) \\ 
+y_i &\sim Normal(\mu_i, \sigma) \\ 
 \mu_i &= \alpha_0 + \alpha_{block[i]} + \beta x_i \\ 
 \alpha_k &\sim Normal(0, \sigma_{\alpha}), \text{for $k$ in } \{1,\cdots ,N_{blocks}\} \\ 
 \alpha_0 &\sim Normal(0, 1) \\
@@ -321,7 +321,7 @@ m1nc <- ulam(
 
 ~ Math
 \begin{aligned}
-y_i &\sim Normal(\mu_i, sigma) \\ 
+y_i &\sim Normal(\mu_i, \sigma) \\ 
 \mu_i &= \alpha_0 + \alpha_{block[i]} + (\beta_0 + \beta_{block[i]}) x_i \\ 
 \alpha_k &\sim Normal(0, \sigma_{\alpha}), \text{for $k$ in } \{1,\cdots ,N_{blocks}\} \\
 \beta_k &\sim Normal(0, \sigma_{\beta}), \text{for $k$ in } \{1,\cdots ,N_{blocks}\} \\ 

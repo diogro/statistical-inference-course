@@ -37,7 +37,7 @@ logit(p_i) &= \alpha + \beta x_i \\
 ![](../figures/golf_logistic.png)
 ~ 
 
-## More physical model
+## Thinking about the geometry
 
 ~ Center
 ![](../figures/golf_physical.png)
@@ -49,7 +49,7 @@ logit(p_i) &= \alpha + \beta x_i \\
 P(|\text{angle}| < sin^{-1}(R-r/x)) = 2\phi \left ( \frac{sin^{-1}(R-r/x)}{\sigma} \right ) - 1
 ~ 
 
-## More physical model II
+## geometric model
 
 ~ Math
 \begin{aligned}
@@ -58,7 +58,13 @@ p_i &=  2\phi \left ( \frac{sin^{-1}(R-r/x_i)}{\sigma} \right ) - 1\\
 \end{aligned}
 ~
 
-## physical model in stan 
+## Single parameter model 
+
+~ Center
+![](../figures/golf_parameter.png)
+~ 
+
+## geometric model in stan 
 
 ```
 data {
@@ -134,4 +140,87 @@ model {
 
 - More: [https://shug3502.github.io/blog/DifferentialEqnsStan](https://shug3502.github.io/blog/DifferentialEqnsStan)
 
-## Pacific tools dataset
+## Pacific island tools dataset
+
+How does population size affect the number of tools in a society?
+
+Are larger population able to develop and maintain larger tool kits?
+
+- $P_i$: Population size in each island
+- $T_i$: Number of tools in society
+
+~ Slide { data-background=../figures/islands.png }
+ 
+~
+
+[butterfly]: ../figures/islands.png "Butterfly" { width=280px  }
+
+
+## Pacific island data set
+
+```
+> library(rethinking)
+> data(Kline)
+> Kline
+      culture population contact total_tools mean_TU
+1    Malekula       1100     low          13     3.2
+2     Tikopia       1500     low          22     4.7
+3  Santa Cruz       3600     low          24     4.0
+4         Yap       4791    high          43     5.0
+5    Lau Fiji       7400    high          33     5.0
+6   Trobriand       8000    high          19     4.0
+7       Chuuk       9200    high          40     3.8
+8       Manus      13000     low          28     6.6
+9       Tonga      17500    high          55     5.4
+10     Hawaii     275000     low          71     6.6
+```
+
+## Poisson regression model
+
+## Dynamic model of tool evolution
+
+Change in number of tools depends on the rate of innovation minus tool loss:
+
+~ Math
+\Delta T = \alpha P ^ \beta - \gamma T
+~ 
+
+Setting $ \Delta T = 0$ and solving for $\hat T$
+
+~ Math
+\hat T = \frac{\alpha P ^ \beta}{\gamma}
+~ 
+
+## Fancy poisson regression model
+
+~ Math
+\begin{aligned}
+T_i &\sim Poisson(\lambda_i) \\
+\lambda_i &= \alpha P_i ^ \beta/\gamma
+\end{aligned}
+~ 
+
+## Adding distance correlations
+
+```
+            Ml  Ti  SC  Ya  Fi  Tr  Ch  Mn  To  Ha
+Malekula   0.0 0.5 0.6 4.4 1.2 2.0 3.2 2.8 1.9 5.7
+Tikopia    0.5 0.0 0.3 4.2 1.2 2.0 2.9 2.7 2.0 5.3
+Santa Cruz 0.6 0.3 0.0 3.9 1.6 1.7 2.6 2.4 2.3 5.4
+Yap        4.4 4.2 3.9 0.0 5.4 2.5 1.6 1.6 6.1 7.2
+Lau Fiji   1.2 1.2 1.6 5.4 0.0 3.2 4.0 3.9 0.8 4.9
+Trobriand  2.0 2.0 1.7 2.5 3.2 0.0 1.8 0.8 3.9 6.7
+Chuuk      3.2 2.9 2.6 1.6 4.0 1.8 0.0 1.2 4.8 5.8
+Manus      2.8 2.7 2.4 1.6 3.9 0.8 1.2 0.0 4.6 6.7
+Tonga      1.9 2.0 2.3 6.1 0.8 3.9 4.8 4.6 0.0 5.0
+Hawaii     5.7 5.3 5.4 7.2 4.9 6.7 5.8 6.7 5.0 0.0
+```
+
+## Random intercepts by society
+
+~ Math
+\begin{aligned}
+T_i &\sim Poisson(\lambda_i) \\
+\lambda_i &= exp(k_{society[i]}) \alpha P_i ^ \beta / \gamma
+\end{aligned}
+~ 

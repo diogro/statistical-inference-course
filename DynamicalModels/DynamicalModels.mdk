@@ -8,6 +8,7 @@ Reveal Theme  : solarized
 Beamer Theme  : singapore
 Package       : pstricks
 Package       : pst-plot
+Bibliography  : ../shared/references.bib
 @html .math-inline, .math-display: color=#586e75
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_SVG-full" type="text/javascript"></script>
@@ -144,7 +145,7 @@ model {
 
 How does population size affect the number of tools in a society?
 
-Are larger population able to develop and maintain larger tool kits?
+Are larger populations able to develop and maintain larger tool kits?
 
 - $P_i$: Population size in each island
 - $T_i$: Number of tools in society
@@ -175,7 +176,32 @@ Are larger population able to develop and maintain larger tool kits?
 10     Hawaii     275000     low          71     6.6
 ```
 
+## Log population predicts tools count?
+
+~ Center
+![](../figures/island_tools.png)
+~ 
+
 ## Poisson regression model
+
+Standard model for count data would be something like:
+
+~ Math
+\begin{aligned}
+T_i &\sim Poisson(\lambda_i) \\
+log(\lambda_i) &= \alpha_{c[i]} + \beta_{c[i]} log(P_i) \\
+\alpha_c &\sim Normal(3, 0.5) \\ 
+\beta_c &\sim Normal(0, 0.2) \\
+\end{aligned}
+~ 
+
+- $\alpha$ and $\beta$ can be made to change according to the contact variable
+
+## Let parameters change according to contact
+
+~ Center
+![](../figures/island_glm_fit.png)
+~ 
 
 ## Dynamic model of tool evolution
 
@@ -186,8 +212,9 @@ Change in number of tools depends on the rate of innovation minus tool loss:
 ~ 
 
 Setting $ \Delta T = 0$ and solving for $\hat T$
+{.fragment} 
 
-~ Math
+~ Math {.fragmented} 
 \hat T = \frac{\alpha P ^ \beta}{\gamma}
 ~ 
 
@@ -196,13 +223,19 @@ Setting $ \Delta T = 0$ and solving for $\hat T$
 ~ Math
 \begin{aligned}
 T_i &\sim Poisson(\lambda_i) \\
-\lambda_i &= \alpha P_i ^ \beta/\gamma
+\lambda_i &= \alpha P_i ^ \beta/\gamma \\
+\alpha, \beta, \gamma &\sim Exponential(1) \\
 \end{aligned}
 ~ 
 
-## Adding distance correlations
+Notice the lack of a link function! 
+
+We can keep $\lambda_i$ positive by using appropriate priors.
+
+## Taking distances into account
 
 ```
+> IslandDist
             Ml  Ti  SC  Ya  Fi  Tr  Ch  Mn  To  Ha
 Malekula   0.0 0.5 0.6 4.4 1.2 2.0 3.2 2.8 1.9 5.7
 Tikopia    0.5 0.0 0.3 4.2 1.2 2.0 2.9 2.7 2.0 5.3
@@ -218,9 +251,129 @@ Hawaii     5.7 5.3 5.4 7.2 4.9 6.7 5.8 6.7 5.0 0.0
 
 ## Random intercepts by society
 
+The $k_i$ will be used to make close-by societies more similar
+
 ~ Math
 \begin{aligned}
 T_i &\sim Poisson(\lambda_i) \\
 \lambda_i &= exp(k_{society[i]}) \alpha P_i ^ \beta / \gamma
 \end{aligned}
+~ 
+
+- We can think of these parameters as adding a continuous "block structure"
+
+## Gaussian process random intercepts
+
+The random intercepts are given a covariance structure that depends on the distance between islands: 
+
+~ Math
+\begin{pmatrix}
+k_1 \\
+k_2 \\
+\vdots \\
+k_{10}
+\end{pmatrix} \sim 
+MVNormal \left ( 
+\begin{pmatrix}
+0 \\
+0 \\
+\vdots \\
+0
+\end{pmatrix}, 
+K
+\right )
+~ 
+
+~ Math
+K_{ij}  = \eta^2 exp(-\rho^2 D^2_{ij})
+~ 
+
+## Covariance kernel
+
+~ Math
+\begin{aligned}
+K_{ij}  &= \eta^2 exp(-\rho^2 D^2_{ij})  \\
+\eta &\sim Exponential(2) \\
+\rho &\sim Exponential(1/2) \\
+\end{aligned}
+~ 
+
+## Prior covariance kernel
+
+~ Center
+![](../figures/prior_covariances.png)
+~ 
+
+## Full model definition
+
+~ Math
+\begin{aligned}
+T_i &\sim Poisson(\lambda_i) \\
+\lambda_i &= exp(k_{society[i]}) \alpha P_i ^ \beta / \gamma \\
+\alpha, \beta, \gamma &\sim Exponential(1) \\
+k_i &\sim \text{MV}Normal(0, K) \\
+K_{ij}  &= \eta^2 exp(-\rho^2 D^2_{ij})  \\
+\eta &\sim Exponential(2) \\
+\rho &\sim Exponential(1/2) \\
+\end{aligned}
+~ 
+
+## Gaussian process model code
+
+```python
+dat_list <- list(
+  T = d$total_tools,
+  P = d$population,
+  society = d$society,
+  Dmat=islandsDistMatrix )
+
+m14.8 <- ulam(
+  alist(
+    T ~ dpois(lambda),
+    lambda <- (a*P^b/g)*exp(k[society]),
+    # non-centered Gaussian Process prior
+    transpars> vector[10]: k <<- L_SIGMA * z,
+    vector[10]: z ~ normal( 0 , 1 ),
+    transpars> matrix[10,10]: L_SIGMA <<- cholesky_decompose( SIGMA ),
+    transpars> matrix[10,10]: SIGMA <- cov_GPL2( Dmat , etasq , rhosq , 0.01 ),
+    c(a,b,g) ~ dexp( 1 ),
+    etasq ~ dexp( 2 ),
+    rhosq ~ dexp( 0.5 )), 
+  data=dat_list , chains=4 , cores=4 , iter=2000 )
+```
+
+## Posterior covariance kernel
+
+~ Center
+![](../figures/posterior_covariances.png)
+~ 
+
+## Estimated correlations
+
+~ Center
+![](../figures/island_correlations.png)
+~ 
+
+## Median model fit with correlations
+
+~ Center
+![](../figures/island_correlatons_fit.png)
+~ 
+
+## Phylogenetic models
+
+~ Center
+![](../figures/primates_nex.png){height: 600px}
+~ 
+
+## Animal models
+
+~ Center
+![](../figures/pedigree.png)
+~ 
+
+~ { font-size:20px}
+Wilson et al. An ecologist's guide to the animal model. J Anim Ecol. 2010 79(1):13-26
+
+doi: 10.1111/j.1365-2656.2009.01639.x 
 ~ 

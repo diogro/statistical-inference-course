@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Bayesian Statistics II</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Diogo Melo" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+    <script src="libs/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy code <i class=\"fa fa-clipboard\"><\/i>","success":"Copied! <i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"Not copied 😕 <i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Bayesian Statistics II
+]
+.subtitle[
+## Fitting models, comparing to ML models
+]
+.author[
+### Diogo Melo
+]
+.date[
+### 5 Fev 2024
+]
+
+---
+
+
+
+
+
+
+
+
+# Model fit
+
+.center[
+![](../figures/height_weight_fit.png)
+]
+
+---
+
+# Posterior samples
+
+```python
+&gt; samples
+# A tibble: 2,000 × 3
+           a         b     sigma
+   &lt;dbl[1d]&gt; &lt;dbl[1d]&gt; &lt;dbl[1d]&gt;
+ 1      115.     0.889      4.78
+ 2      109.     1.02       5.30
+ 3      112.     0.928      5.07
+ 4      111.     0.949      5.30
+ 5      111.     0.955      5.04
+ 6      115.     0.872      5.19
+ 7      109.     1.01       5.13
+ 8      117.     0.844      5.00
+ 9      115.     0.882      4.94
+10      112.     0.939      4.95
+# … with 1,990 more rows
+```
+
+---
+
+# How to get posterior samples?
+
+- There is no general method to find high probability regions in arbitrary probability distributions.
+
+- This mean most models are fit using purely computational methods.
+
+---
+
+# Curse of dimensionality 
+
+- For simple parameters spaces, we can do grid search or some brute force method to find high probability regions
+
+- This breaks down quickly as the number of parameters increases
+
+#### High dimensional watermelons are awful 
+
+.center[
+&lt;img src="../figures/watermelon.svg" width="800" /&gt;
+]
+
+---
+
+# Typical set 
+
+.center[
+&lt;img src="../figures/typical_set.svg" width="500" /&gt;
+]
+
+---
+
+# Multivariate gaussians
+
+.center[
+&lt;img src="../figures/gaussians.svg" width="700" /&gt;
+]
+
+---
+
+# Distance from mean in 2 dimensions
+
+
+.center[
+&lt;img src="../figures/2d_gauss.png" width="500" /&gt;
+]
+
+---
+
+# Gaussian typical set
+
+.center[
+&lt;img src="../figures/typical_set.gif" width="500" /&gt;
+]
+
+
+---
+
+# Finding high probability regions
+
+.pull-left[
+#### Typical set
+&lt;img src="../figures/typical_set2.png" width="200" /&gt;
+]
+
+.pull-right[
+#### MCMC method
+
+.center[
+&lt;img src="../figures//MCMC_typical.png" width="700" /&gt;
+]
+]
+---
+
+## MCMC samplers 
+
+-  Metropolis–Hastings algorithms (broad class of samplers, very general)
+  - Most methods in the wild are some flavor of this 
+-  Reversible Jump MCMC (used in many phylogenetic packages)
+  - Allows for posterior distributions with variable dimensionality
+-  Usable non-mcmc methods: R-INLA - integrated nested Laplace approximation.
+  - Great for structural equation modeling, much faster for some classes of models
+
+---
+
+## MCMC samplers 2
+
+-  Gibbs samplers
+    - Mostly surpassed, but still in wide use.
+    - Can sample discrete parameters.
+    - Requires particular types of priors.
+    - Software: WinBugs, Bugs, Jags...
+-  Hamiltonian Monte Carlo samplers
+    - Latest generations samplers.
+    - Fast and general.
+    - Discrete parameters must be integrated.
+    - Can fit dynamic models using differential equations.
+    - Software: PyMC3, Edward, Stan (rethinking engine)...
+
+---
+
+## what makes these samplers different?
+
+Basically the transition proposal distribution 
+
+~ Math
+P(\theta_{i+1} | \theta_i)
+]
+
+---
+
+## Our model from yesterday
+
+~~ Math
+\begin{aligned} 
+  y_i &amp;\sim Normal(\mu_i, \sigma) \\
+  \mu_i &amp;= \alpha + \beta x_i  \\
+  \alpha &amp;\sim Normal(0, 20) \\
+  \beta &amp;\sim lognormal(0, 1) \\
+  \sigma &amp;\sim Exponential(1) \\
+\end{aligned} 
+~~
+
+---
+
+## Code in rethinking
+
+~ Begin Columns
+
+~ Column 
+Model
+~~~ Math
+\begin{aligned} 
+  y_i &amp;\sim Normal(\mu_i, \sigma) \\
+  \mu_i &amp;= \alpha + \beta x_i  \\
+  \alpha &amp;\sim Normal(0, 20) \\
+  \beta &amp;\sim lognormal(0, 1) \\
+  \sigma &amp;\sim Exponential(1) \\
+\end{aligned} 
+~~~
+]
+
+~ Column 
+Code
+```python
+ # Data
+library(rethinking)
+d2 &lt;- Howell1[ Howell1$age &gt;= 18 , ] 
+
+# Model
+ulam(alist(
+  y ~ normal(mu, sigma),
+  mu &lt;- a + b * x,
+  a ~ normal(0, 20),
+  b ~ lognormal(0, 1),
+  sigma ~ exponential(1)), 
+  data = list(y = d2$height, 
+              x = d2$weight),
+  iter = 1000, chains = 4, cores = 4)
+```
+~ 
+
+~ End Columns
+
+---
+
+## rethinking generates stan code
+
+```r
+data{
+    vector[352] y;
+    vector[352] x;
+}
+parameters{
+    real a;
+    real&lt;lower=0&gt; b;
+    real&lt;lower=0&gt; sigma;
+}
+model{
+    vector[352] mu;
+    sigma ~ exponential( 1 );
+    b ~ lognormal( 0 , 1 );
+    a ~ normal( 0 , 20 );
+    for ( i in 1:352 ) {
+        mu[i] = a + b * x[i];
+    }
+    y ~ normal( mu , sigma );
+}
+```
+
+---
+
+## Sampler arguments
+
+- Chains
+- Cores
+- Iterations
+- Warm-up (or burn-in)
+
+---
+
+## Chains and convergence
+
+~Center
+![](../figures/trace_plot.png)
+]
+
+```r
+&gt; precis(fit)
+        mean   sd   5.5%  94.5% n_eff Rhat4
+a     112.97 2.00 109.83 116.19  1013  1.01
+b       0.92 0.04   0.86   0.99  1004  1.01
+sigma   5.08 0.20   4.78   5.40  1543  1.00
+```
+
+---
+
+## Model checking
+
+After fitting the model, we can use the posterior to simulate synthetic data and compare to the data used to fit the model. Discrepancies can suggest paths to improve the model.
+
+~ Math
+y_{sim} \sim P(y_{sim}|y) = P(y_{sim}|\theta) P(\theta|y)
+]
+
+---
+
+## Posterior simulations
+
+~Center
+![](../figures/height_weight_posteriors_simulation.png)
+]
+
+---
+
+## Posterior correlations
+
+~Center
+![](../figures/height_weight_pairs.png)
+]
+
+---
+
+## Reparametrization
+
+```python
+ulam(alist(
+  y ~ normal(mu, sigma),
+  mu &lt;- a + b * x,
+  a ~ normal(0, 1),
+  b ~ lognormal(0, 1),
+  sigma ~ exponential(1)), 
+  data = list(y = d2$height - mean(d2$height), 
+              x = (d2$weight - mean(d2$weight))/sd(d2$weight)),
+  iter = 1000, chains = 4, cores = 4)
+```
+
+---
+
+## Posterior after centering
+
+  ~Center
+![](../figures/height_weight_pairs_centered.png)
+]
+
+---
+
+## Collinear predictors
+
+The posterior can be used to interpret weird results. 
+
+Returning to the primate milk example:
+
+- `\(K_i\)`: caloric content of milk in several monkey groups
+- `\(x_i\)`: milk fat content
+- `\(z_i\)`: milk sugar content
+
+~~ Math
+`\begin{aligned}
+  K_i &amp;\sim Normal(\mu_i, \sigma) \\
+  m1: \mu_i &amp;= \alpha + \beta_x x_i \\
+  m2: \mu_i &amp;= \alpha + \beta_z z_i\\
+  m3: \mu_i &amp;= \alpha + \beta_x x_i + \beta_z z_i \\
+  \alpha, \beta_x, \beta_z &amp;\sim Normal(0, 0.5) \\
+  \sigma &amp;\sim Exponential(1)
+\end{aligned}`
+~~
+
+---
+
+## Shifting effects
+
+~Center
+![](../figures/milk_coefs.png)
+]
+
+Smaller effects and wider intervals
+
+---
+
+## Correlated coefficients - m3 model
+
+~Center
+![](../figures/milk_coef_pairs.png)
+]
+
+---
+
+## Correlated predictors
+
+~Center
+![](../figures/milk_predictor_pairs.png)
+]
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

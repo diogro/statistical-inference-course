@@ -1,0 +1,244 @@
+{
+  "_preamble": "",
+  "_comments": "",
+  "rethinking": {
+    "id": "rethinking",
+    "type": "book",
+    "author": [
+      {
+        "family": "McElreath",
+        "given": "Richard"
+      }
+    ],
+    "title": "Statistical rethinking: A Bayesian course with examples in R and Stan",
+    "issued": {
+      "date-parts": [
+        [
+          "2020"
+        ]
+      ]
+    },
+    "publisher": "Chapman and Hall/CRC",
+    "_line": "../shared/references.bib:1"
+  },
+  "jaynes2003": {
+    "id": "jaynes2003",
+    "type": "book",
+    "author": [
+      {
+        "family": "Jaynes",
+        "given": "Edwin T"
+      }
+    ],
+    "title": "Probability theory: The logic of science",
+    "issued": {
+      "date-parts": [
+        [
+          "2003"
+        ]
+      ]
+    },
+    "publisher": "Cambridge university press",
+    "_line": "../shared/references.bib:7"
+  },
+  "glymour2016causal": {
+    "id": "glymour2016causal",
+    "type": "book",
+    "author": [
+      {
+        "family": "Glymour",
+        "given": "Madelyn"
+      },
+      {
+        "family": "Pearl",
+        "given": "Judea"
+      },
+      {
+        "family": "Jewell",
+        "given": "Nicholas P"
+      }
+    ],
+    "title": "Causal inference in statistics: A primer",
+    "issued": {
+      "date-parts": [
+        [
+          "2016"
+        ]
+      ]
+    },
+    "publisher": "John Wiley &amp; Sons",
+    "_line": "../shared/references.bib:13"
+  },
+  "westreich2013-fk": {
+    "id": "Westreich2013-fk",
+    "type": "article-journal",
+    "author": [
+      {
+        "family": "Westreich",
+        "given": "Daniel"
+      },
+      {
+        "family": "Greenland",
+        "given": "Sander"
+      }
+    ],
+    "title": "The table 2 fallacy: presenting and interpreting confounder and\n   modifier coefficients",
+    "container-title": "Am. J. Epidemiol.",
+    "issued": {
+      "date-parts": [
+        [
+          "2013",
+          "2"
+        ]
+      ]
+    },
+    "issn": "0002-9262, 1476-6256",
+    "URLtext": "PMC3626058",
+    "URLpretext": "[PMCID:]{.etype}",
+    "eprint-type": "pmcid",
+    "eprint": "PMC3626058",
+    "URL": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3626058",
+    "DOI": "10.1093/aje/kws412",
+    "page": "292-298",
+    "page-first": "292",
+    "volume": "177",
+    "issue": "4",
+    "_line": "../shared/references.bib:19"
+  },
+  "betancourt2017-hu": {
+    "id": "Betancourt2017-hu",
+    "type": "article-journal",
+    "author": [
+      {
+        "family": "Betancourt",
+        "given": "Michael"
+      }
+    ],
+    "title": "A Conceptual Introduction to Hamiltonian Monte Carlo",
+    "issued": {
+      "date-parts": [
+        [
+          "2017",
+          "1"
+        ]
+      ]
+    },
+    "URLtext": "stat.ME/1701.02434",
+    "URLpretext": "[arXiv:]{.etype}",
+    "eprint-type": "arxiv",
+    "eprint": "1701.02434",
+    "eprint-class": "stat.ME",
+    "URL": "http://arxiv.org/abs/1701.02434",
+    "_line": "../shared/references.bib:36"
+  },
+  "gelman2013-ae": {
+    "id": "Gelman2013-ae",
+    "type": "book",
+    "author": [
+      {
+        "family": "Gelman",
+        "given": "Andrew"
+      },
+      {
+        "family": "Carlin",
+        "given": "John B"
+      },
+      {
+        "family": "Stern",
+        "given": "Hal S"
+      },
+      {
+        "family": "Dunson",
+        "given": "David B"
+      },
+      {
+        "family": "Vehtari",
+        "given": "Aki"
+      },
+      {
+        "family": "Rubin",
+        "given": "Donald B"
+      }
+    ],
+    "title": "Bayesian Data Analysis, Third Edition",
+    "issued": {
+      "date-parts": [
+        [
+          "2013",
+          "11"
+        ]
+      ]
+    },
+    "publisher": "CRC Press",
+    "isbn": "9781439840955",
+    "_line": "../shared/references.bib:47"
+  },
+  "montgomery2018-mi": {
+    "id": "Montgomery2018-mi",
+    "type": "article-journal",
+    "author": [
+      {
+        "family": "Montgomery",
+        "given": "Jacob M"
+      },
+      {
+        "family": "Nyhan",
+        "given": "Brendan"
+      },
+      {
+        "family": "Torres",
+        "given": "Michelle"
+      }
+    ],
+    "title": "How conditioning on posttreatment variables can ruin your\n   experiment and what to do about it",
+    "container-title": "Am. J. Pol. Sci.",
+    "issued": {
+      "date-parts": [
+        [
+          "2018",
+          "7"
+        ]
+      ]
+    },
+    "publisher": "Wiley",
+    "issn": "0092-5853, 1540-5907",
+    "DOI": "10.1111/ajps.12357",
+    "page": "760-775",
+    "page-first": "760",
+    "volume": "62",
+    "issue": "3",
+    "_line": "../shared/references.bib:58"
+  },
+  "cinelli2020-go": {
+    "id": "Cinelli2020-go",
+    "type": "article-journal",
+    "author": [
+      {
+        "family": "Cinelli",
+        "given": "Carlos"
+      },
+      {
+        "family": "Hazlett",
+        "given": "Chad"
+      }
+    ],
+    "title": "Making sense of sensitivity: extending omitted variable bias",
+    "container-title": "J. R. Stat. Soc. Series B Stat. Methodol.",
+    "issued": {
+      "date-parts": [
+        [
+          "2020",
+          "2"
+        ]
+      ]
+    },
+    "publisher": "Wiley",
+    "issn": "1369-7412, 1467-9868",
+    "DOI": "10.1111/rssb.12348",
+    "page": "39-67",
+    "page-first": "39",
+    "volume": "82",
+    "issue": "1",
+    "_line": "../shared/references.bib:76"
+  }
+}

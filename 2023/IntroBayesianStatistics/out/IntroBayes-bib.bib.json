@@ -1,0 +1,44 @@
+{
+  "_preamble": "",
+  "_comments": "",
+  "rethinking": {
+    "id": "rethinking",
+    "type": "book",
+    "author": [
+      {
+        "family": "McElreath",
+        "given": "Richard"
+      }
+    ],
+    "title": "Statistical rethinking: A Bayesian course with examples in R and Stan",
+    "issued": {
+      "date-parts": [
+        [
+          "2020"
+        ]
+      ]
+    },
+    "publisher": "Chapman and Hall/CRC",
+    "_line": "../shared/references.bib:1"
+  },
+  "jaynes2003": {
+    "id": "jaynes2003",
+    "type": "book",
+    "author": [
+      {
+        "family": "Jaynes",
+        "given": "Edwin T"
+      }
+    ],
+    "title": "Probability theory: The logic of science",
+    "issued": {
+      "date-parts": [
+        [
+          "2003"
+        ]
+      ]
+    },
+    "publisher": "Cambridge university press",
+    "_line": "../shared/references.bib:7"
+  }
+}

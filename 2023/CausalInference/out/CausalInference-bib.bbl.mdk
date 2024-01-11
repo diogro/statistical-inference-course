@@ -1,0 +1,16 @@
+~ begin bibliography { .bib-numeric; cite-style:"numeric:'[',']',', '" ; caption:"3" ; data-style:"numeric" ; data-style:'madoko-numeric';  }
+~ begin bibitem {id:"Cinelli2020-go"; cite-year:"2020"; cite-authors:"Cinelli and Hazlett"; cite-authors-long:"Cinelli and Hazlett"; cite-label:"1"; caption:"Making sense of sensitivity: extending omitted variable bias&nl;Cinelli and Hazlett, 2020"; data-line:"../shared/references.bib:76"; searchterm:"Making%20sense%20of%20sensitivity%3A%20extending%20omitted%20variable%20bias%20Cinelli%20and%20Hazlett%2C%202020"; spellcheck:"false"; bibitem-label:"\[1\]"}
+\/Carlos Cinelli, and Chad Hazlett. &ldquo;Making Sense of Sensitivity: Extending Omitted Variable Bias.&rdquo; _J.&nbsp;R.&nbsp;Stat. Soc. Series B Stat. Methodol._ 82 (1). Wiley: 39–67. Feb. 2020. doi:[10.1111/rssb.12348](https://dx.doi.org/10.1111/rssb.12348){.bib-doi}.
+~ end bibitem
+
+~ begin bibitem {id:"Montgomery2018-mi"; cite-year:"2018"; cite-authors:"Montgomery et al."; cite-authors-long:"Montgomery, Nyhan, and Torres"; cite-label:"2"; caption:"How conditioning on posttreatment variables can ruin your&nl;   experiment and what to do about it&nl;Montgomery, Nyhan, and Torres, 2018"; data-line:"../shared/references.bib:58"; searchterm:"How%20conditioning%20on%20posttreatment%20variables%20can%20ruin%20your%20experiment%20and%20what%20to%20do%20about%20it%20Montgomery%2C%20Nyhan%2C%20and%20Torres%2C%202018"; spellcheck:"false"; bibitem-label:"\[2\]"}
+\/Jacob M Montgomery, Brendan Nyhan, and Michelle Torres. &ldquo;How Conditioning on Posttreatment Variables Can Ruin Your
+&nbsp; Experiment and What to Do about It.&rdquo; _Am. J.&nbsp;Pol. Sci._ 62 (3). Wiley: 760–775. Jul. 2018. doi:[10.1111/ajps.12357](https://dx.doi.org/10.1111/ajps.12357){.bib-doi}.
+~ end bibitem
+
+~ begin bibitem {id:"Westreich2013-fk"; cite-year:"2013"; cite-authors:"Westreich and Greenland"; cite-authors-long:"Westreich and Greenland"; cite-label:"3"; caption:"The table 2 fallacy: presenting and interpreting confounder and&nl;   modifier coefficients&nl;Westreich and Greenland, 2013"; data-line:"../shared/references.bib:19"; searchterm:"The%20table%202%20fallacy%3A%20presenting%20and%20interpreting%20confounder%20and%20modifier%20coefficients%20Westreich%20and%20Greenland%2C%202013"; spellcheck:"false"; bibitem-label:"\[3\]"}
+\/Daniel Westreich, and Sander Greenland. &ldquo;The Table 2 Fallacy: Presenting and Interpreting Confounder and
+&nbsp; Modifier Coefficients.&rdquo; _Am. J.&nbsp;Epidemiol._ 177 (4): 292–298. Feb. 2013. doi:[10.1093/aje/kws412](https://dx.doi.org/10.1093/aje/kws412){.bib-doi}.
+~ end bibitem
+
+~ end bibliography

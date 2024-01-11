@@ -1,0 +1,6 @@
+~ begin bibliography { .bib-numeric; cite-style:"numeric:'[',']',', '" ; caption:"1" ; data-style:"numeric" ; data-style:'madoko-numeric';  }
+~ begin bibitem {id:"Wilson2010-fu"; cite-year:"2010"; cite-authors:"Wilson et al."; cite-authors-long:"Wilson, R&eacute;ale, Clements, Morrissey, Postma, Walling, et al."; cite-label:"1"; caption:"An ecologist's guide to the animal model&nl;Wilson, R&eacute;ale, Clements, Morrissey, Postma, Walling, et al., 2010"; data-line:"../shared/references.bib:111"; searchterm:"An%20ecologist's%20guide%20to%20the%20animal%20model%20Wilson%2C%20R%26eacute%3Bale%2C%20Clements%2C%20Morrissey%2C%20Postma%2C%20Walling%2C%20et%20al.%2C%202010"; spellcheck:"false"; bibitem-label:"\[1\]"}
+\/Alastair J Wilson, Denis R&eacute;ale, Michelle N Clements, Michael M Morrissey, Erik Postma, Craig A Walling, Loeske E B Kruuk, and Daniel H Nussey. &ldquo;An Ecologist’s Guide to the Animal Model.&rdquo; _J.&nbsp;Anim. Ecol._ 79 (1). Blackwell Publishing Ltd: 13–26. Jan. 2010. doi:[10.1111/j.1365-2656.2009.01639.x](https://dx.doi.org/10.1111/j.1365-2656.2009.01639.x){.bib-doi}.
+~ end bibitem
+
+~ end bibliography

@@ -1,0 +1,10 @@
+~ begin bibliography { .bib-natural; cite-style:"natural:'(',')','; '" ; caption:"2" ; data-style:"author-date" ; data-style:'evolution';  }
+~ begin bibitem {id:"jaynes2003"; cite-year:"2003"; cite-authors:"Jaynes"; cite-authors-long:"Jaynes"; cite-label:"Jaynes, 2003"; caption:"Probability theory: The logic of science&nl;Jaynes, 2003"; data-line:"../shared/references.bib:7"; searchterm:"Probability%20theory%3A%20The%20logic%20of%20science%20Jaynes%2C%202003"; spellcheck:"false"}
+JAYNES, E.&nbsp;T.&nbsp;**Probability theory: The logic of science**. [s.l.] Cambridge university press, 2003.
+~ end bibitem
+
+~ begin bibitem {id:"rethinking"; cite-year:"2020"; cite-authors:"McElreath"; cite-authors-long:"McElreath"; cite-label:"McElreath, 2020"; caption:"Statistical rethinking: A Bayesian course with examples in R and Stan&nl;McElreath, 2020"; data-line:"../shared/references.bib:1"; searchterm:"Statistical%20rethinking%3A%20A%20Bayesian%20course%20with%20examples%20in%20R%20and%20Stan%20McElreath%2C%202020"; spellcheck:"false"}
+MCELREATH, R.&nbsp;**Statistical rethinking: A Bayesian course with examples in R and Stan**. [s.l.] Chapman and Hall/CRC, 2020.
+~ end bibitem
+
+~ end bibliography

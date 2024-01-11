@@ -1,0 +1,10 @@
+
+.custom-box {
+    display: inline-block; /* Display as an inline block element */
+    max-width: 100%; /* Set the maximum width to 100% of its container */
+    padding: 1rem; /* Add padding to the box content */
+    background-color: white; /* Background color */
+    border: 1px solid #000; /* Border color and width */
+    border-radius: 0.5rem; /* Border radius */
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); /* Box shadow */
+}

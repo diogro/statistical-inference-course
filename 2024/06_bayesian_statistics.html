@@ -18,6 +18,7 @@
     <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
     <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="styles.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -37,6 +38,7 @@ class: center, middle, inverse, title-slide
 ]
 
 ---
+
 
 
 
@@ -63,31 +65,29 @@ class: inverse, center, middle
 # The Maximum Likelihood way
 
 .pull-left[
-   Given some data...
+- Given some data...
 
   `\(y = \{ y_1, \cdots, y_n \}\)`
 
-  Define an observational model: 
+- Define an observational model: 
   
   `\(P(y|\theta) = L_y(\theta)\)`
 
-  Maximize the likelihood over the parameter space: 
+- Maximize the likelihood over the parameter space: 
   
   `\(\hat{\theta} =\underset{\theta \in \Omega}{\operatorname{arg max}} \left [ L_y(\theta) \right ]\)`
 ]
 --
 
 .pull-right[
-  Any further inference uses this ML estimator:
-  &lt;center&gt;
 
-.bg-white.b--brblack.ba.bw2.br3.shadow-5.ph4.mt1[
+- Any further inference uses this ML estimator:
 
-  `\(\mu = f(\hat{\theta})\)`
-
-  ]
-
-  &lt;/center&gt;
+.center[
+&lt;div class="custom-box"&gt;
+ \(\mu = f(\hat{\theta}) \)
+&lt;/div&gt;
+]
 ]
 
 ---
@@ -135,17 +135,17 @@ $$
 We can think of Bayesian Statistics as an extension of ML
 
 - ML: What is the parameter value that maximizes the probability of having generated the data:
-.bg-white.b--brblack.ba.bw2.br3.shadow-5.ph4.mt1[
-  .center[
-  `\(\underset{\theta \in \Omega}{\operatorname{arg max}} \left [ P(y|\theta) \right ]\)`
-  ]
+.center[
+&lt;div class="custom-box"&gt;
+ \( \underset{\theta \in \Omega}{\operatorname{arg max}} \left [ P(y|\theta) \right ] \)
+&lt;/div&gt;
 ]
 
 - Bayes: What is the probability distribution of parameter values given the data:
-.bg-white.b--brblack.ba.bw2.br3.shadow-5.ph4.mt1[
-  .center[
-  `\(P(\theta|y) \propto P(\theta)P(y|\theta)\)`
-  ]
+.center[
+&lt;div class="custom-box"&gt;
+ \( P(\theta|y) \propto P(\theta)P(y|\theta) \)
+&lt;/div&gt;
 ]
 
 ---
@@ -232,16 +232,18 @@ class: inverse, center, middle
 
 - Bayesian equivalent to MLE is the **M**aximum **A** **P**osteriori (MAP):
 
-$$
-\hat \theta^{MAP}  = \underset{\theta \in \Omega}{\operatorname{arg max}} \left [ P(\theta|y) \right ]
-$$
+.center[
+&lt;div class="custom-box"&gt;
+\( \hat \theta^{MAP}  = \underset{\theta \in \Omega}{\operatorname{arg max}} \left [ P(\theta|y) \right ] \)
+&lt;/div&gt;
+]
 
 - The posterior mean is more common:
 
 .center[
-
-`\(E_y[\theta]  = \sum_{\theta \in \Omega} \theta P(\theta|y)\)`
-
+&lt;div class="custom-box"&gt;
+\( E_y[\theta]  = \sum_{\theta \in \Omega} \theta P(\theta|y) \)
+&lt;/div&gt;
 ]
 
 (Posterior median is also used occasionally.) 
@@ -254,8 +256,14 @@ $$
 
 - For most models, we use posterior samples to approximate the posterior.
 
+.center[
+  &lt;div class="custom-box"&gt;
+    \(
+    \{\theta_1, \cdots, \theta_N\} \sim P(\theta|y)
+    \)
+  &lt;/div&gt;
+]
 
-`$$\{\theta_1, \cdots, \theta_N\} \sim P(\theta|y)$$`
 
 
 ---

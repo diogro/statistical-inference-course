@@ -94,8 +94,16 @@ theme_Publication <- function(base_size = 14, base_family = "helvetica") {
 
 ---
 
-# Posterior samples
+# Posterior samples are everything!
 
+.pull-left[
+- ML methods use estimated values for parameters for everything
+  - $\mu = f(\hat \theta)$
+
+- Bayesian methods use the posterior distribution for parameters
+]
+
+.pull-right[
 ```r
 > samples
 # A tibble: 2,000 × 3
@@ -113,6 +121,7 @@ theme_Publication <- function(base_size = 14, base_family = "helvetica") {
 10      112.     0.939      4.95
 # … with 1,990 more rows
 ```
+]
 
 ---
 
@@ -153,20 +162,33 @@ knitr::include_graphics("../figures/typical_set.svg")
 # Finding the typical set
 
 .pull-left[
-#### Typical set
-```{r, out.width= 200, echo=FALSE}
-knitr::include_graphics("../figures/typical_set2.png")
-```
-]
-
-.pull-right[
-#### MCMC method
+- Find a sequence of points in the parameter space that converge to the typical set:
 
 .center[
-```{r, out.width= 700, echo=FALSE}
-knitr::include_graphics("../figures//MCMC_typical.png")
-```
+  <div class="custom-box">
+    \(
+    \theta_1 \rightarrow \theta_2 \rightarrow \theta_3 \rightarrow \theta_4 \rightarrow \cdots
+    \)
+  </div>
+  ]
+
+- Such that:
+
+.center[
+  <div class="custom-box">
+    \(
+    \{ \theta_1, \cdots, \theta_n \} \sim P(\theta | y)
+    \)
+  </div>
 ]
+
+]
+
+
+.pull-right[
+```{r, out.width= 800, echo=FALSE}
+knitr::include_graphics("../figures/MCMC_typical.png")
+```
 ]
 ---
 
@@ -197,7 +219,9 @@ knitr::include_graphics("../figures//MCMC_typical.png")
 
 ---
 
-## what makes these samplers different?
+## What makes these samplers different?
+
+.pull-left[
 
 - Basically the transition proposal distribution 
 
@@ -210,11 +234,12 @@ knitr::include_graphics("../figures//MCMC_typical.png")
 ]
 
 - We can visualize what is going on with different samplers:
-  [MCMC interactive gallery](https://chi-feng.github.io/mcmc-demo/app.html)
+  - [MCMC interactive gallery](https://chi-feng.github.io/mcmc-demo/app.html)
+]
 
 ---
 
-## Our model from yesterday
+## Our model from last class
 
 .center[
   <div class="custom-box">
@@ -334,7 +359,7 @@ sigma   5.08 0.20   4.78   5.40  1543  1.00
 
 ---
 
-## Model checking
+# Model checking
 
 After fitting the model, we can use the posterior to simulate synthetic data and compare to the data used to fit the model. Discrepancies can suggest paths to improve the model.
 
@@ -345,6 +370,31 @@ After fitting the model, we can use the posterior to simulate synthetic data and
     \)
   </div>
 ]
+
+For each value of the parameters ( $\theta_i = \{ a_i, b_i, \sigma_i \}$ ) we can simulate a synthetic dataset $y_{sim}$ and compare to the observed data $y$.
+
+.center[
+  <div class="custom-box">
+    \(
+    y_{sim} = Normal(a_i + b_i x, \sigma_i)
+    \)
+  </div>
+]
+
+---
+
+## Step by step for posterior simulations
+
+1. Extract the **posterior samples** for the parameters a, b, and sigma from the fitted model.
+2. For each set of parameter values (a, b, sigma):
+  - Compute the predicted outcome y_pred = a + b*x.
+  - Add random noise to y_pred, where the noise is drawn from a normal distribution with mean 0 and standard deviation sigma. This gives the synthetic data y_sim.
+3. Compare the synthetic data y_sim to the observed data y.
+  - Compute summary statistics (e.g., mean, variance, **quantiles**) for both y_sim and y.
+  - If the summary statistics are similar for y_sim and y, this suggests that the model is a good fit to the data.
+4. Repeat steps 2-3 for all sets of parameter values to get a distribution of summary statistics for the synthetic data.
+5. Compare the distribution of summary statistics for the synthetic data to the corresponding summary statistics for the observed data. If they are similar, this suggests that the model is a good fit to the data. If they are not similar, this suggests that the model may need to be improved.
+
 
 ---
 

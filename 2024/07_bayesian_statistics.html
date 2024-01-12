@@ -106,33 +106,7 @@ class: center, middle, inverse, title-slide
 
 ---
 
-# Multivariate gaussians
-
-.center[
-&lt;img src="../figures/gaussians.svg" width="700" /&gt;
-]
-
----
-
-# Distance from mean in 2 dimensions
-
-
-.center[
-&lt;img src="../figures/2d_gauss.png" width="500" /&gt;
-]
-
----
-
-# Gaussian typical set
-
-.center[
-&lt;img src="../figures/typical_set.gif" width="500" /&gt;
-]
-
-
----
-
-# Finding high probability regions
+# Finding the typical set
 
 .pull-left[
 #### Typical set
@@ -177,48 +151,59 @@ class: center, middle, inverse, title-slide
 
 ## what makes these samplers different?
 
-Basically the transition proposal distribution 
+- Basically the transition proposal distribution 
 
-~ Math
-P(\theta_{i+1} | \theta_i)
+.center[
+  &lt;div class="custom-box"&gt;
+    \(
+    P(\theta_{i+1} | \theta_i)
+    \)
+  &lt;/div&gt;
 ]
+
+- We can visualize what is going on with different samplers:
+  [MCMC interactive gallery](https://chi-feng.github.io/mcmc-demo/app.html)
 
 ---
 
 ## Our model from yesterday
 
-~~ Math
-\begin{aligned} 
+.center[
+  &lt;div class="custom-box"&gt;
+  \(
+  \begin{aligned} 
   y_i &amp;\sim Normal(\mu_i, \sigma) \\
   \mu_i &amp;= \alpha + \beta x_i  \\
   \alpha &amp;\sim Normal(0, 20) \\
   \beta &amp;\sim lognormal(0, 1) \\
   \sigma &amp;\sim Exponential(1) \\
-\end{aligned} 
-~~
+  \end{aligned} 
+  \)
+  &lt;/div&gt;
+]
 
 ---
 
 ## Code in rethinking
 
-~ Begin Columns
+.pull-left[
+#### Model
 
-~ Column 
-Model
-~~~ Math
-\begin{aligned} 
+  &lt;div class="custom-box"&gt;
+  \(
+  \begin{aligned} 
   y_i &amp;\sim Normal(\mu_i, \sigma) \\
   \mu_i &amp;= \alpha + \beta x_i  \\
   \alpha &amp;\sim Normal(0, 20) \\
   \beta &amp;\sim lognormal(0, 1) \\
   \sigma &amp;\sim Exponential(1) \\
-\end{aligned} 
-~~~
+  \end{aligned} 
+  \)
+  &lt;/div&gt;
 ]
-
-~ Column 
-Code
-```python
+.pull-right[
+#### Code
+```r
  # Data
 library(rethinking)
 d2 &lt;- Howell1[ Howell1$age &gt;= 18 , ] 
@@ -234,14 +219,12 @@ ulam(alist(
               x = d2$weight),
   iter = 1000, chains = 4, cores = 4)
 ```
-~ 
-
-~ End Columns
+]
 
 ---
 
 ## rethinking generates stan code
-
+.pull-left[
 ```r
 data{
     vector[352] y;
@@ -263,24 +246,24 @@ model{
     y ~ normal( mu , sigma );
 }
 ```
+]
+.pull-right[
+&lt;img src="../figures/stan_logo.png" width="300" /&gt;
+- [Stan](https://mc-stan.org/)
+- [Stan Dev](https://github.com/stan-dev/stan)
+]
 
 ---
 
 ## Sampler arguments
 
+.pull-left[
 - Chains
 - Cores
 - Iterations
 - Warm-up (or burn-in)
 
----
-
-## Chains and convergence
-
-~Center
-![](../figures/trace_plot.png)
-]
-
+#### Model summary
 ```r
 &gt; precis(fit)
         mean   sd   5.5%  94.5% n_eff Rhat4
@@ -288,6 +271,16 @@ a     112.97 2.00 109.83 116.19  1013  1.01
 b       0.92 0.04   0.86   0.99  1004  1.01
 sigma   5.08 0.20   4.78   5.40  1543  1.00
 ```
+]
+.pull-right[
+
+#### Chains and convergence
+
+.center[
+![:scale 100%](../figures/trace_plot.png)
+]
+]
+
 
 ---
 
@@ -397,6 +390,7 @@ Smaller effects and wider intervals
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
 <script>var slideshow = remark.create({
 "highlightStyle": "github",
 "highlightLines": true,

@@ -14,6 +14,7 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+      beforeInit: "macros.js"
       ratio: '16:9'
 self-contained: true
 ---
@@ -149,39 +150,7 @@ knitr::include_graphics("../figures/typical_set.svg")
 
 ---
 
-# Multivariate gaussians
-
-.center[
-```{r, out.width= 700, echo=FALSE}
-knitr::include_graphics("../figures/gaussians.svg")
-```
-]
-
----
-
-# Distance from mean in 2 dimensions
-
-
-.center[
-```{r, out.width= 500, echo=FALSE}
-knitr::include_graphics("../figures/2d_gauss.png")
-```
-]
-
----
-
-# Gaussian typical set
-
-.center[
-```{r, out.width= 500, echo=FALSE}
-knitr::include_graphics("../figures/typical_set.gif")
-```
-]
-
-
----
-
-# Finding high probability regions
+# Finding the typical set
 
 .pull-left[
 #### Typical set
@@ -230,48 +199,59 @@ knitr::include_graphics("../figures//MCMC_typical.png")
 
 ## what makes these samplers different?
 
-Basically the transition proposal distribution 
+- Basically the transition proposal distribution 
 
-~ Math
-P(\theta_{i+1} | \theta_i)
+.center[
+  <div class="custom-box">
+    \(
+    P(\theta_{i+1} | \theta_i)
+    \)
+  </div>
 ]
+
+- We can visualize what is going on with different samplers:
+  [MCMC interactive gallery](https://chi-feng.github.io/mcmc-demo/app.html)
 
 ---
 
 ## Our model from yesterday
 
-~~ Math
-\begin{aligned} 
+.center[
+  <div class="custom-box">
+  \(
+  \begin{aligned} 
   y_i &\sim Normal(\mu_i, \sigma) \\
   \mu_i &= \alpha + \beta x_i  \\
   \alpha &\sim Normal(0, 20) \\
   \beta &\sim lognormal(0, 1) \\
   \sigma &\sim Exponential(1) \\
-\end{aligned} 
-~~
+  \end{aligned} 
+  \)
+  </div>
+]
 
 ---
 
 ## Code in rethinking
 
-~ Begin Columns
+.pull-left[
+#### Model
 
-~ Column 
-Model
-~~~ Math
-\begin{aligned} 
+  <div class="custom-box">
+  \(
+  \begin{aligned} 
   y_i &\sim Normal(\mu_i, \sigma) \\
   \mu_i &= \alpha + \beta x_i  \\
   \alpha &\sim Normal(0, 20) \\
   \beta &\sim lognormal(0, 1) \\
   \sigma &\sim Exponential(1) \\
-\end{aligned} 
-~~~
+  \end{aligned} 
+  \)
+  </div>
 ]
-
-~ Column 
-Code
-```python
+.pull-right[
+#### Code
+```r
  # Data
 library(rethinking)
 d2 <- Howell1[ Howell1$age >= 18 , ] 
@@ -287,14 +267,12 @@ ulam(alist(
               x = d2$weight),
   iter = 1000, chains = 4, cores = 4)
 ```
-~ 
-
-~ End Columns
+]
 
 ---
 
 ## rethinking generates stan code
-
+.pull-left[
 ```r
 data{
     vector[352] y;
@@ -316,24 +294,26 @@ model{
     y ~ normal( mu , sigma );
 }
 ```
+]
+.pull-right[
+```{r, out.width= 300, echo=FALSE}
+knitr::include_graphics("../figures/stan_logo.png")
+```
+- [Stan](https://mc-stan.org/)
+- [Stan Dev](https://github.com/stan-dev/stan)
+]
 
 ---
 
 ## Sampler arguments
 
+.pull-left[
 - Chains
 - Cores
 - Iterations
 - Warm-up (or burn-in)
 
----
-
-## Chains and convergence
-
-~Center
-![](../figures/trace_plot.png)
-]
-
+#### Model summary
 ```r
 > precis(fit)
         mean   sd   5.5%  94.5% n_eff Rhat4
@@ -341,6 +321,16 @@ a     112.97 2.00 109.83 116.19  1013  1.01
 b       0.92 0.04   0.86   0.99  1004  1.01
 sigma   5.08 0.20   4.78   5.40  1543  1.00
 ```
+]
+.pull-right[
+
+#### Chains and convergence
+
+.center[
+![:scale 100%](../figures/trace_plot.png)
+]
+]
+
 
 ---
 

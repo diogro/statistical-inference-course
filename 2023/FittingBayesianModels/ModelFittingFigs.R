@@ -39,13 +39,13 @@ fit = ulam(alist(
   sigma ~ exponential(1)), 
   data = list(y = d2$height, 
               x = d2$weight),
-  iter = 2000, chains = 4, cores = 4)
+  iter = 2000, chains = 4, cores = 4, cmdstan=TRUE)
 precis(fit)
 
 png(here::here("figures", "trace_plot.png"), 
-    height = 400, 
+    height = 600, 
     width = 800, bg = "transparent")
-traceplot_ulam(fit) 
+traceplot_ulam(fit, "b", n_col = 1, lwd = 2) 
 dev.off()
 
 samples = as_tibble(extract.samples(fit))

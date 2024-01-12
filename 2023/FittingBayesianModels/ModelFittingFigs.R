@@ -1,4 +1,4 @@
-pak::pkg_install(c("rmcelreath/rethinking", "rstanarm", "bayesplot", "ggplot2", "cowplot", "viridis", "patchwork", "latex2exp", "extrafont", "tidyverse", "stats4"))
+pak::pkg_install(c("rmcelreath/rethinking", "rstanarm", "bayesplot", "ggplot2", "cowplot", "viridis", "patchwork", "latex2exp", "extrafont", "tidyverse", "stats4", "gganimate"))
 library(rethinking)
 library(rstanarm)
 library(bayesplot)
@@ -51,6 +51,8 @@ dev.off()
 samples = as_tibble(extract.samples(fit))
 samples
 
+x_range = range(d2$weight) + c(-1, 1)
+
 png(here::here("figures", "height_weight_fit.png"), height = fig.height, width = fig.width, bg = "transparent")
 ggplot(d2, aes(weight, height)) + 
   xlim(x_range[1], x_range[2]) + 
@@ -102,7 +104,7 @@ simulated_data = array(NA, dim = c(N, n_samples))
 samples = data.frame(samples)
 for(k in 1:n_samples)
   simulated_data[,k] = rnorm(N, 
-                             mean = samples[k, "a"] + samples[k, "b"] * x, 
+                             mean = c(samples[k, "a"]) + c(samples[k, "b"]) * x, 
                              sd = samples[k, "sigma"])
 
 png(here::here("figures/height_weight_posteriors_simulation.png"), 

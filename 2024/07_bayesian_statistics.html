@@ -56,7 +56,7 @@ class: center, middle, inverse, title-slide
 
 # Posterior samples
 
-```python
+```r
 &gt; samples
 # A tibble: 2,000 × 3
            a         b     sigma
@@ -288,15 +288,19 @@ sigma   5.08 0.20   4.78   5.40  1543  1.00
 
 After fitting the model, we can use the posterior to simulate synthetic data and compare to the data used to fit the model. Discrepancies can suggest paths to improve the model.
 
-~ Math
-y_{sim} \sim P(y_{sim}|y) = P(y_{sim}|\theta) P(\theta|y)
+.center[
+  &lt;div class="custom-box"&gt;
+    \(
+    y_{sim} \sim P(y_{sim}|y) = P(y_{sim}|\theta) P(\theta|y)
+    \)
+  &lt;/div&gt;
 ]
 
 ---
 
 ## Posterior simulations
 
-~Center
+.center[
 ![](../figures/height_weight_posteriors_simulation.png)
 ]
 
@@ -304,7 +308,7 @@ y_{sim} \sim P(y_{sim}|y) = P(y_{sim}|\theta) P(\theta|y)
 
 ## Posterior correlations
 
-~Center
+.center[
 ![](../figures/height_weight_pairs.png)
 ]
 
@@ -312,23 +316,48 @@ y_{sim} \sim P(y_{sim}|y) = P(y_{sim}|\theta) P(\theta|y)
 
 ## Reparametrization
 
-```python
+.pull-left[
+- Scaling and shifting parameters can help with convergence
+
+- Centering both x and y values
+- Scaling x to unit variance
+
+  &lt;div class="custom-box"&gt;
+    \(
+    \begin{aligned} 
+    \tilde y_i &amp;= y_i - \bar y \\
+    \tilde x_i &amp;= \frac{x_i - \bar x}{sd(x)} \\
+    \end{aligned} 
+    \)
+  &lt;/div&gt;
+]
+.pull-right[
+
+```r
+# Pre-calculate means and sds
+mean_x = mean(d2$weight)
+sd_x = sd(d2$weight)
+mean_y = mean(d2$height)
+
+# Model
 ulam(alist(
   y ~ normal(mu, sigma),
   mu &lt;- a + b * x,
   a ~ normal(0, 1),
   b ~ lognormal(0, 1),
   sigma ~ exponential(1)), 
-  data = list(y = d2$height - mean(d2$height), 
-              x = (d2$weight - mean(d2$weight))/sd(d2$weight)),
+  data = list(
+*   y =  d2$height - mean_y,
+*   x = (d2$weight - mean_x)/sd_x),
   iter = 1000, chains = 4, cores = 4)
 ```
+]
 
 ---
 
 ## Posterior after centering
 
-  ~Center
+.center[
 ![](../figures/height_weight_pairs_centered.png)
 ]
 
@@ -336,6 +365,7 @@ ulam(alist(
 
 ## Collinear predictors
 
+.pull-left[
 The posterior can be used to interpret weird results. 
 
 Returning to the primate milk example:
@@ -343,23 +373,28 @@ Returning to the primate milk example:
 - `\(K_i\)`: caloric content of milk in several monkey groups
 - `\(x_i\)`: milk fat content
 - `\(z_i\)`: milk sugar content
-
-~~ Math
-`\begin{aligned}
-  K_i &amp;\sim Normal(\mu_i, \sigma) \\
-  m1: \mu_i &amp;= \alpha + \beta_x x_i \\
-  m2: \mu_i &amp;= \alpha + \beta_z z_i\\
-  m3: \mu_i &amp;= \alpha + \beta_x x_i + \beta_z z_i \\
-  \alpha, \beta_x, \beta_z &amp;\sim Normal(0, 0.5) \\
-  \sigma &amp;\sim Exponential(1)
-\end{aligned}`
-~~
-
+]
+.pull-right[
+.center[
+  &lt;div class="custom-box"&gt;
+    \(
+    \begin{aligned}
+      K_i &amp;\sim Normal(\mu_i, \sigma) \\
+      m1: \mu_i &amp;= \alpha + \beta_x x_i \\
+      m2: \mu_i &amp;= \alpha + \beta_z z_i\\
+      m3: \mu_i &amp;= \alpha + \beta_x x_i + \beta_z z_i \\
+      \alpha, \beta_x, \beta_z &amp;\sim Normal(0, 0.5) \\
+      \sigma &amp;\sim Exponential(1)
+    \end{aligned}
+    \)
+  &lt;/div&gt;
+]
+]
 ---
 
 ## Shifting effects
 
-~Center
+.center[
 ![](../figures/milk_coefs.png)
 ]
 
@@ -369,7 +404,7 @@ Smaller effects and wider intervals
 
 ## Correlated coefficients - m3 model
 
-~Center
+.center[
 ![](../figures/milk_coef_pairs.png)
 ]
 
@@ -377,7 +412,7 @@ Smaller effects and wider intervals
 
 ## Correlated predictors
 
-~Center
+.center[
 ![](../figures/milk_predictor_pairs.png)
 ]
 

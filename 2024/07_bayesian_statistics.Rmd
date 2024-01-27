@@ -100,7 +100,7 @@ theme_Publication <- function(base_size = 14, base_family = "helvetica") {
 - ML methods use estimated values for parameters for everything
   - $\mu = f(\hat \theta)$
 
-- Bayesian methods use the posterior distribution for parameters
+- Bayesian methods use the posterior distribution of the parameters for everything
 ]
 
 .pull-right[
@@ -514,10 +514,4 @@ Smaller effects and wider intervals
 .center[
 ![](../figures/milk_predictor_pairs.png)
 ]
-
-
-
-
-
-
 

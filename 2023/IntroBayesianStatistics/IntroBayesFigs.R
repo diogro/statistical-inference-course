@@ -1,4 +1,6 @@
-pak::pkg_install(c("rmcelreath/rethinking", "rstanarm", "bayesplot", "ggplot2", "cowplot", "viridis", "patchwork", "latex2exp", "extrafont", "tidyverse", "stats4"))
+pak::pkg_install(c("rstanarm", "bayesplot", "ggplot2", "cowplot", "viridis", "patchwork", "latex2exp", "extrafont", "tidyverse", "stats4"))
+pak::pkg_install(c("colorspace", "viridisLite", "RColorBrewer", "munsell", "labeling", "isoband", "gtable", "farver", "scales", "numDeriv", "generics", "backports", "mvtnorm", "coda"))
+remotes::install_github("rmcelreath/rethinking", force = TRUE)
 library(rethinking)
 library(rstanarm)
 library(bayesplot)
@@ -10,6 +12,7 @@ library(latex2exp)
 library(extrafont)
 library(tidyverse)
 library(stats4)
+
 
 #font_import()
 loadfonts(device = "all", quiet = TRUE) 
@@ -188,9 +191,10 @@ ggplot(d2, aes(weight, height)) +
 
 png(here::here("figures/height_weight_posteriors.png"), 
     height = 500, width = 1000, bg = "transparent")
-par(mfrow = c(1, 2))
-dens(samples$a, xlim = c(105, 125), lwd = 5, col = 2, main = expression(alpha))
-dens(samples$b, xlim = c(0.7, 1.1), lwd = 5, col = 2, main = expression(beta))
+par(mfrow = c(1, 3))
+dens(samples$a, xlim = c(106, 121), lwd = 5, col = 2)
+dens(samples$b, xlim = c(0.77, 1.05), lwd = 5, col = 2)
+dens(samples$sigma, xlim = c(4.3, 6), lwd = 5, col = 2)
 dev.off()
 
 ## Constrasts
@@ -235,5 +239,24 @@ mcmc_dens(sample,
                                   family = figure.font, color = "#586E75"), 
         axis.text = element_text(size = axis.font.size*0.8,
                                  family = figure.font, color = "#586E75"),
+        legend.position = "none")
+dev.off()
+
+### Confidence intervals
+
+fit <- stan_glm(mpg ~ ., data = mtcars)
+posterior <- as.matrix(fit)
+
+plot_title <- ggtitle("Posterior distributions",
+                      "with medians and 80% intervals")
+png(here::here("../Slides/figures", "confidence_intervals.png"), height = fig.height, width = fig.width, bg = "transparent")
+mcmc_areas(sample,
+           pars = c("a.1", "a.2", "a.3", "a.4"),
+           prob = 0.8) + theme_minimal() +
+  geom_vline(xintercept = 0, linewidth = 1) + 
+  scale_y_discrete(labels = levels(d$clade)) +
+  labs(x = "expected kcal (std)") +
+  theme(axis.title = element_text(size = axis.font.size, family = figure.font, color = "#586E75"), 
+        axis.text = element_text(size = axis.font.size*0.8, family = figure.font, color = "#586E75"),
         legend.position = "none")
 dev.off()

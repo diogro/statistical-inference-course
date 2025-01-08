@@ -140,7 +140,7 @@ When fitting causal models, it is often necessary to add covariates to a linear 
 
 For example, in the following DAGs, where X, Y and Z are observed, and U is unobserved:
 
-![](../figures/DAGS/good_controls_1.png)
+![](figures/DAGS/good_controls_1.png)
 
 There is always a shared common cause between X and Y, and estimating the effect of X on Y requires blocking this non-causal path. The variable Z can be used as a covariate in all cases, even in the presence of the unobserved confound U.
 
@@ -164,7 +164,7 @@ lm(Y ~ X + Z) |> coef() # Unbiased, effect of X is correct and equal to b_yx
 
 The same logic applies if the confound is mediated by another variable M:
 
-![](../figures/DAGS/good_controls_2.png)
+![](figures/DAGS/good_controls_2.png)
 
 Z should be added as a covariate in all of these cases. 
 
@@ -178,7 +178,7 @@ __Exercise__: Choose one of these DAGs and run a simulation, explore the effect 
 Some covariates can be added to a model not to avoid bias, but to increase precision. For example, in the following DAG:
 
 ```{r, out.height=100, out.width=100, echo=FALSE}
-knitr::include_graphics("../figures/DAGS/pretty_good.png")
+knitr::include_graphics("figures/DAGS/pretty_good.png")
 ```
 
 Adding Z as a covariate increases the precision of the estimate of the effect of X on Y.
@@ -212,13 +212,13 @@ Two classes of bad controls are the posttreatment or overcontrol bias, and bias 
 In the following DAGs, controlling on Z would lead to a understimate of the effect of X on Y.
 
 ```{r, out.height=150, out.width=550, echo=FALSE}
-knitr::include_graphics("../figures/DAGS/overcontrol.png")
+knitr::include_graphics("figures/DAGS/overcontrol.png")
 ```
 
 In the following case, controlling on Z would lead to an increase in the bias caused by the unobserved variable U.
 
 ```{r, out.height=150, out.width=210, echo=FALSE}
-knitr::include_graphics("../figures/DAGS/bias_amplification.png")
+knitr::include_graphics("figures/DAGS/bias_amplification.png")
 ```
 
 __Exercise__: Simulate the bias amplification example and check the effect of including the Z variable in the model.
@@ -266,7 +266,7 @@ __The only way to identify the possible bias is having a clear scientific model.
 For each of the following DAGs form the rethinking book, write down the correct models for estimating the total causal influence of X on Y:
 
 ```{r, out.height=285, out.width=400, echo=FALSE}
-knitr::include_graphics("../figures/dags_6M3.png")
+knitr::include_graphics("figures/dags_6M3.png")
 ```
 
 You can check your answers using the dagitty package or the [online interface](http://www.dagitty.net/dags.html)^[For begginers, we reccomend to start playing with this interface, and then check the results with the `dagitty` package]. Here is an example:

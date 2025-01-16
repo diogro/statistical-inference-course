@@ -84,6 +84,10 @@ df$tannin = scale(df$tannin, scale = FALSE)
 df$growth = scale(df$growth, scale = FALSE)
 ols_fit = lm(growth ~ tannin, data = df)
 precis(ols_fit)
+
+sglm_fit = stan_glm(growth ~ tannin, data = df, cores = 4)
+summary(sglm_fit, probs = c(0.025, 0.975))[, 1:5]
+
 fit  = ulam(alist(growth ~ normal(mu, sigma),
                   mu <- a + b*tannin,
                   a ~ normal(0, 1),
@@ -189,3 +193,68 @@ p <- ggplot(df, aes(x = diet, y = growth)) +
 p
 ggsave("figures/categorical-predictor-plot.png", plot = p, 
        width = 900, height = 750, units = "px")
+
+
+# 9 obervations, 3 treatments, 1 response for a simulated constinuous response
+
+x = sample(LETTERS[1:3], 9, replace = TRUE)
+y = 1 + ifelse(x == "A", 0, ifelse(x == "B", 1, 2)) + rnorm(9)
+df = tibble(y, x)
+df
+ascii(data.frame(y, x))
+print(ascii(df), type = "rest")
+
+fit_contrasts = stan_glm(y ~ x, data = df, cores = 4)
+summary(fit_contrasts)[1:4, 1:3]
+
+m1 = lm(y ~ x, data = df)
+precis(m1, prob = 0.95)
+
+onehot = model.matrix(~0+x, data = df)
+fit_onehot = stan_glm(y ~ 0 + onehot, data = df, cores = 4)
+summary(fit_onehot)[1:4, 1:3]
+
+onehot = model.matrix(~0+x, data = df)
+fit_residual = stan_glm(y ~ 1 + onehot, data = df, cores = 4)
+summary(fit_residual)[1:4, 1:3]
+cr = coef(fit_residual)
+coh = coef(fit_onehot)
+cr[1] + cr[2]
+cr[1] + cr[3]
+cr[1] + cr[4]
+coh
+tapply(df$y, df$x, mean)
+
+# baysplots for all 3 versions
+
+x = sample(LETTERS[1:3], 200, replace = TRUE)
+y = 1 + ifelse(x == "A", 0, ifelse(x == "B", 1, 2)) + rnorm(100)
+df = tibble(y, x)
+onehot = model.matrix(~0+x, data = df)
+
+df
+
+fit_contrasts = stan_glm(y ~ x, data = df, cores = 4)
+fit_onehot = stan_glm(y ~ 0 + onehot, data = df, cores = 4)
+fit_residual = stan_glmer(y ~ 1 + (1|x), data = df, cores = 4, prior_intercept = normal(mean(df$y), 0.1))
+
+summary(fit_contrasts)[1:3, 1:3] |> round(2)
+summary(fit_onehot)[1:3, 1:3] |> round(2)
+summary(fit_residual)[1:4, 1:3] |> round(2)
+
+samples = as.data.frame(fit_contrasts)
+p1 = mcmc_intervals(samples, pars = c("(Intercept)", "xB", "xC"), point_size = 1, inner_size = 0.5, outer_size = 0.25) + ggtitle("Contrasts") + scale_x_continuous(limits = c(-3, 4), breaks = (-3):4)
+
+samples = as.data.frame(fit_onehot)
+p2 = mcmc_intervals(samples, pars = c("onehotxA", "onehotxB", "onehotxC"), point_size = 1, inner_size = 0.5, outer_size = 0.25) + ggtitle("One-hot") + scale_x_continuous(limits = c(-3, 4), breaks = (-3):4)
+
+
+samples = as.data.frame(fit_residual)
+head(samples)
+levels = grep("b\\[", names(samples), value = T)
+p3 = mcmc_intervals(samples, pars = c("(Intercept)", levels), point_size = 1, inner_size = 0.5, outer_size = 0.25) + ggtitle("Residual") + scale_x_continuous(limits = c(-3, 4), breaks = (-3):4)
+
+
+p = p1 / p2 / p3
+ggsave("figures/contrasts-onehot-residuals.png", plot = p, 
+       width = 2200, height = 1500, units = "px")

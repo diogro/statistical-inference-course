@@ -360,3 +360,6 @@ p2 = ggplot(df, aes(x = `body.mass`, y = `metabolic.rate`,
     theme_cowplot(10)
 
 p1 + p2 + plot_layout(guides = 'collect')
+
+3/(4^3)
+dbinom(2, 3, 0.25)/3
